@@ -1,19 +1,14 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-
-var SEED = require('../config/config').SEED;
-
+var SEED = require('../config/google.config').SEED;
 var app = express();
 var Usuario = require('../models/usuario');
-
-
 var GoogleAuth = require('google-auth-library');
 var auth = new GoogleAuth;
 
-const GOOGLE_CLIENT_ID = require('../config/config').GOOGLE_CLIENT_ID;
-const GOOGLE_SECRET = require('../config/config').GOOGLE_SECRET;
-
+const GOOGLE_CLIENT_ID = require('../config/google.config').GOOGLE_CLIENT_ID;
+const GOOGLE_SECRET = require('../config/google.config').GOOGLE_SECRET;
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 
@@ -194,7 +189,7 @@ app.post('/', (req, res) => {
 
 });
 
-
+// niveles de role
 
 function obtenerMenu(ROLE) {
 
@@ -202,11 +197,11 @@ function obtenerMenu(ROLE) {
             titulo: 'Principal',
             icono: 'mdi mdi-gauge',
             submenu: [
-                { titulo: 'Dashboard', url: '/dashboard' },
-                { titulo: 'ProgressBar', url: '/progress' },
-                { titulo: 'Gráficas', url: '/graficas1' },
-                { titulo: 'Promesas', url: '/promesas' },
-                { titulo: 'RxJs', url: '/rxjs' }
+                { titulo: 'Dashboard', url: '/dashboard' }//,
+               // { titulo: 'ProgressBar', url: '/progress' },
+               // { titulo: 'Gráficas', url: '/graficas1' },
+               // { titulo: 'Promesas', url: '/promesas' },
+               // { titulo: 'RxJs', url: '/rxjs' }
             ]
         } //,
         // {
@@ -221,6 +216,8 @@ function obtenerMenu(ROLE) {
     ];
 
     console.log('ROLE', ROLE);
+
+    //COORDINADOR_ROLE, DESPACHADOR_ROLE, OPERADOR_ROLE
 
     if (ROLE === 'ADMIN_ROLE') {
         //menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });//lo pone en la primera posicion del arreglo mientras que el push lo pone al final

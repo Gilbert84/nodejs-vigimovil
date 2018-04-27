@@ -3,9 +3,29 @@ var uniqueValidator = require('mongoose-unique-validator');
 
 var Schema = mongoose.Schema;
 
+//jerarquia menu de nive 0 hasta rol de desarrollador
+// la posicion 0 del arreglo es para USER_ROLE TIPOS DE ROLES PENDIENTES : Cohesionador ,Monitor 
+
+/*
+Administrador educativo
+Administrativo de oficina
+Administrativo de planificación de personal
+Administrativo de programación de trasnporte
+Administrativo publicitario
+Cartógrafo
+Director del departamento de marketing
+Encargado del compras de compras
+Encargado del departamento de ventas
+Gerente de producción u operaciones
+Gerente del departamento de finanzas
+Gerente del departamento de personal
+Gerente del departamento de publicidad
+Gerente del departamento de relaciones públicas
+Técnico informático de soporte técnico
+*/
 
 var rolesValidos = {
-    values: ['ADMIN_ROLE', 'USER_ROLE'],
+    values: ['USER_ROLE', 'COORDINADOR_ROLE' ,'ADMIN_ROLE' , 'SUPER_ROLE'],
     message: '{VALUE} no es un rol permitido'
 };
 

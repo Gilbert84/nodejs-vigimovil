@@ -1,6 +1,6 @@
 var jwt = require('jsonwebtoken');
 
-var SEED = require('../config/config').SEED;
+var SEED = require('../config/google.config').SEED;
 
 
 // ==========================================

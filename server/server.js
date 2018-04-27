@@ -1,17 +1,17 @@
 // Requires
+require('./config/server.config');
 var express = require('express');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var socketIO = require('socket.io');
 var http = require('http');
 var path = require('path');
-var urlDB = require('./config/config').db;
+
 
 
 // Inicializar variables
 var app = express();
 //var publicPath = path.resolve(__dirname, '../public');
-var port = process.env.PORT || 3000;
 
 
 // CORS  mas informacion en: https://enable-cors.org/server_expressjs.html , https://github.com/expressjs/cors 
@@ -41,7 +41,7 @@ var imagenesRoutes = require('./routes/imagenes');
 var deviceRoutes = require('./routes/device');
 
 // Conexión a la base de datos  urlDBlocal
-mongoose.connection.openUri(urlDB, (err, res) => {
+mongoose.connection.openUri(process.env.urlDataBase, (err, res) => {
     if (err) throw err;
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 });
@@ -73,7 +73,7 @@ require('./sockets/socket');
 
 
 // Escuchar peticiones
-server.listen(port, (err) => {
+server.listen(process.env.PORT, (err) => {
     if (err) throw new Error(err);
-    console.log(`Servidor en puerto. ${ port }: \x1b[32m%s\x1b[0m`, 'online');
+    console.log(`Servidor en puerto. ${ process.env.PORT }: \x1b[32m%s\x1b[0m`, 'online');
 });

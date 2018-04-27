@@ -18,7 +18,7 @@ const dispositivos = new Dispositivos();
 
 io.on('connection', (socket) => {
 
-    console.log('entro id : ', socket.id);
+    //console.log('entro id : ', socket.id);
 
     socket.on('entrarChat', (data, callback) => {
 
@@ -63,7 +63,6 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
 
-
         var personaBorrada = usuarios.borrarPersona(socket.id);
         var dispositivoBorrado = dispositivos.borrarDispositivo(socket.id);
 
@@ -75,12 +74,7 @@ io.on('connection', (socket) => {
             socket.broadcast.to(dispositivoBorrado.ruta).emit('listaPersona', usuarios.getPersonasPorSala(dispositivoBorrado.ruta));
         }
 
-        console.log('salio id: ', socket.id);
-
-
-
-
-
+        //console.log('salio id: ', socket.id);
 
     });
 
