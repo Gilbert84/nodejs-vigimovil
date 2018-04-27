@@ -77,6 +77,3 @@ server.listen(port, (err) => {
     if (err) throw new Error(err);
     console.log(`Servidor en puerto. ${ port }: \x1b[32m%s\x1b[0m`, 'online');
 });
-
-
-

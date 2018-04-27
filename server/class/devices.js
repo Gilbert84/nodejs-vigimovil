@@ -1,3 +1,13 @@
+var crearMensaje = (nombre, mensaje) => {
+
+    return {
+        nombre,
+        mensaje,
+        fecha: new Date().getTime()
+    };
+
+}
+
 class Dispositivos {
 
     constructor() {
@@ -9,6 +19,7 @@ class Dispositivos {
         var dispositivo = { id, nombre, ruta };
 
         this.dispositivos.push(dispositivo);
+        console.log(dispositivo);
 
         return this.dispositivos;
 
@@ -38,25 +49,19 @@ class Dispositivos {
 
     }
 
-    dataSocketDev (device,data,callback ){
-    console.log('entro el dispositivo:',data);
+    validarData(device, data) {
 
-        console.log('entro el dispositivo:',data);
-        if (!device.nombre || !device.ruta) {
+        if (!data.nombre || !data.ruta) {
             return callback({
                 error: true,
                 mensaje: 'El nombre/ruta es necesario'
             });
         }
 
-        device.join(device.ruta);
+        device.join(data.ruta);
 
-        dispositivos.agregarDispositivo(device.id, device.nombre, device.ruta);
+        this.agregarDispositivo(device.id, data.nombre, data.ruta);
 
-        device.broadcast.to(device.ruta).emit('listaDispositivo', dispositivos.getDispositivoPorRuta(device.ruta));
-        device.broadcast.to(device.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ device.nombre } se unió`));
-
-        callback(dispositivos.getDispositivoPorRuta(device.ruta));
     };
 
 

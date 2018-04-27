@@ -18,9 +18,11 @@ const dispositivos = new Dispositivos();
 
 io.on('connection', (socket) => {
 
+    console.log('entro id : ', socket.id);
+
     socket.on('entrarChat', (data, callback) => {
 
-        console.log('entro el usuario:',data);
+        console.log('entro el usuario:', data);
         if (!data.nombre || !data.sala) {
             return callback({
                 error: true,
@@ -39,9 +41,11 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('entrarDev', (data, callback)=>{
-        console.log('entro el dispositivo:',data);
-        dispositivos.dataSocketDev(socket,data,callback);
+    socket.on('entrarDev', (data, callback) => {
+        dispositivos.validarData(socket, data); // validamos la info
+        socket.broadcast.to(data.ruta).emit('listaDispositivo', dispositivos.getDispositivoPorRuta(data.ruta));
+        socket.broadcast.to(data.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ data.nombre } se unió`));
+        callback(dispositivos.getDispositivoPorRuta(data.ruta));
     });
 
 
@@ -59,10 +63,23 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
 
-        let personaBorrada = usuarios.borrarPersona(socket.id);
 
-        socket.broadcast.to(personaBorrada.sala).emit('crearMensaje', crearMensaje('Administrador', `${ personaBorrada.nombre } salió`));
-        socket.broadcast.to(personaBorrada.sala).emit('listaPersona', usuarios.getPersonasPorSala(personaBorrada.sala));
+        var personaBorrada = usuarios.borrarPersona(socket.id);
+        var dispositivoBorrado = dispositivos.borrarDispositivo(socket.id);
+
+        if (personaBorrada != undefined) {
+            socket.broadcast.to(personaBorrada.sala).emit('crearMensaje', crearMensaje('Administrador', `${ personaBorrada.nombre } salió`));
+            socket.broadcast.to(personaBorrada.sala).emit('listaPersona', usuarios.getPersonasPorSala(personaBorrada.sala));
+        } else if (dispositivoBorrado != undefined) {
+            socket.broadcast.to(dispositivoBorrado.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ dispositivoBorrado.nombre } salió`));
+            socket.broadcast.to(dispositivoBorrado.ruta).emit('listaPersona', usuarios.getPersonasPorSala(dispositivoBorrado.ruta));
+        }
+
+        console.log('salio id: ', socket.id);
+
+
+
+
 
 
     });
