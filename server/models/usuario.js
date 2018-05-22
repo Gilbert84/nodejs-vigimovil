@@ -1,6 +1,5 @@
 var mongoose = require('mongoose');
 var uniqueValidator = require('mongoose-unique-validator');
-
 var Schema = mongoose.Schema;
 
 //jerarquia menu de nive 0 hasta rol de desarrollador
@@ -25,7 +24,7 @@ Técnico informático de soporte técnico
 */
 
 var rolesValidos = {
-    values: ['USER_ROLE', 'COORDINADOR_ROLE' ,'ADMIN_ROLE' , 'SUPER_ROLE'],
+    values: ['USER_ROLE', 'OPERADOR_ROLE','COORDINADOR_ROLE' ,'ADMIN_ROLE' , 'SUPER_ROLE'],
     message: '{VALUE} no es un rol permitido'
 };
 
@@ -40,6 +39,6 @@ var usuarioSchema = new Schema({
     google: { type: Boolean, required: true, default: false }
 });
 
-usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
+//usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 
 module.exports = mongoose.model('Usuario', usuarioSchema);

@@ -5,6 +5,7 @@ var app = express();
 var Empresa = require('../models/empresa');
 var Operario = require('../models/operario');
 var Usuario = require('../models/usuario');
+var Dispositivo = require('../models/dispositivo.model');
 
 // ==============================
 // Busqueda por colección
@@ -30,11 +31,14 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
         case 'empresas':
             promesa = buscarEmpresas(busqueda, regex);
             break;
+        case 'dispositivos':
+            promesa = buscarDispositivos(busqueda, regex);
+            break;
 
         default:
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Los tipos de busqueda sólo son: usuarios, operarios y empresas',
+                mensaje: 'Los tipos de busqueda sólo son: usuarios, operarios, dispositivos y empresas',
                 error: { message: 'Tipo de tabla/coleccion no válido' }
             });
 
@@ -64,7 +68,8 @@ app.get('/todo/:busqueda', (req, res, next) => {
     Promise.all([
             buscarEmpresas(busqueda, regex),
             buscarOperarios(busqueda, regex),
-            buscarUsuarios(busqueda, regex)
+            buscarUsuarios(busqueda, regex),
+            buscarDispositivos(busqueda, regex)
         ])
         .then(respuestas => {
 
@@ -72,7 +77,8 @@ app.get('/todo/:busqueda', (req, res, next) => {
                 ok: true,
                 empresas: respuestas[0],
                 operarios: respuestas[1],
-                usuarios: respuestas[2]
+                usuarios: respuestas[2],
+                dispositivos: respuestas[3]
             });
         })
 
@@ -91,7 +97,7 @@ function buscarEmpresas(busqueda, regex) {
                 if (err) {
                     reject('Error al cargar empresas', err);
                 } else {
-                    resolve(empresas)
+                    resolve(empresas);
                 }
             });
     });
@@ -109,9 +115,30 @@ function buscarOperarios(busqueda, regex) {
                 if (err) {
                     reject('Error al cargar operarios', err);
                 } else {
-                    resolve(operarios)
+                    resolve(operarios);
                 }
             });
+    });
+}
+
+function buscarDispositivos(busqueda, regex) {
+
+    return new Promise((resolve, reject) => {
+
+        Dispositivo.find({}, 'nombre uuid')
+            .or([{ 'nombre': regex }, { 'uuid': regex }])
+            .exec((err, dispositivos) => {
+
+                if (err) {
+                    reject('Error al cargar dispositivos', err);
+                } else {
+                    resolve(dispositivos);
+                }
+
+
+            })
+
+
     });
 }
 
@@ -124,7 +151,7 @@ function buscarUsuarios(busqueda, regex) {
             .exec((err, usuarios) => {
 
                 if (err) {
-                    reject('Erro al cargar usuarios', err);
+                    reject('Error al cargar usuarios', err);
                 } else {
                     resolve(usuarios);
                 }

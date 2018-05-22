@@ -225,12 +225,52 @@ function obtenerMenu(ROLE) {
             titulo: 'Mantenimientos',
             icono: 'mdi mdi-folder-lock-open',
             submenu: [
-                { titulo: 'Usuarios', url: '/usuarios' },
-                { titulo: 'Empresas', url: '/empresas' },
-                { titulo: 'Operarios', url: '/operarios' }
+                {   titulo: 'Usuarios', url: '/usuarios' },
+                {   titulo: 'Empresas', url: '/empresas' },
+                {   titulo: 'Operarios', url: '/operarios' },
+                {   titulo: 'Dispositivos', url: '/dispositivos' }
             ]
         });
     }
+
+    // if (ROLE === 'ADMIN_ROLE') {
+    //     //menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });//lo pone en la primera posicion del arreglo mientras que el push lo pone al final
+    //     menu.push({
+    //         titulo: 'Mantenimientos',
+    //         icono: 'mdi mdi-folder-lock-open',
+    //         submenu: [
+    //             {   
+    //                 titulo: 'Usuarios', 
+    //                 icono: 'mdi mdi-folder-lock-open',
+    //                 extramenu:[
+    //                     {titulo:'Usuarios',url:'/usuarios'}
+    //                 ] 
+    //             },    
+    //             {   
+    //                 titulo: 'Empresas', 
+    //                 icono: 'mdi mdi-folder-lock-open',
+    //                 extramenu:[
+    //                     {titulo:'Empresas',url:'/empresas'}
+    //                 ] 
+    //             },   
+    //             {   
+    //                 titulo: 'Operarios', 
+    //                 icono: 'mdi mdi-folder-lock-open',
+    //                 extramenu:[
+    //                     {titulo:'Operarios',url:'/operarios'}
+    //                 ] 
+    //             },          
+    //             {   
+    //                 titulo: 'Dispositivos', 
+    //                 icono: 'mdi mdi-folder-lock-open',
+    //                 extramenu:[
+    //                     {titulo:'Dispositivos',url:'/dispositivos'}
+    //                 ] 
+    //             },
+
+    //         ]
+    //     });
+    // }
 
 
     return menu;

@@ -1,10 +1,68 @@
 var express = require('express');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+var SEED = require('../config/google.config').SEED;
 
 var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
 var Operario = require('../models/operario');
+
+
+// ==========================================
+//  Autenticación normal operario
+// ==========================================
+app.post('/login', (req, res) => {
+
+
+    var body = req.body;
+    console.log(body);
+
+    Operario.findOne({ alias: body.alias }, (err, operarioDB) => {
+
+        console.log(operarioDB);
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar operario',
+                errors: err
+            });
+        }
+
+        if (!operarioDB) {
+            return res.status(200).json({
+                ok: false,
+                mensaje: 'Credenciales incorrectas',
+                errors: err
+            });
+        }
+        if (!bcrypt.compareSync(body.password, operarioDB.password)) {
+            return res.status(200).json({
+                ok: false,
+                mensaje: 'Credenciales incorrectas',
+                errors: err
+            });
+        }
+
+
+        // // Crear un token!!!
+        operarioDB.password = ':)';
+
+        var token = jwt.sign({ operario: operarioDB }, SEED, { expiresIn: 43200 }); // 12 horas
+
+        res.status(200).json({
+             ok: true,
+             operario: operarioDB,
+             token: token,
+             id: operarioDB._id,
+        });
+
+    });
+
+
+});
 
 // ==========================================
 // Obtener todos los operarios
@@ -18,7 +76,6 @@ app.get('/', (req, res, next) => {
         .skip(desde)
         .limit(5)
         .populate('usuario', 'nombre email')
-        .populate('empresas')
         .exec(
             (err, operarios) => {
 
@@ -43,7 +100,7 @@ app.get('/', (req, res, next) => {
 });
 
 // ==========================================
-// Obtener médico
+// Obtener operario
 // ==========================================
 app.get('/:id', (req, res) => {
 
@@ -144,6 +201,8 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var operario = new Operario({
         nombre: body.nombre,
+        alias:body.alias,
+        password:bcrypt.hashSync(body.password, 10),
         usuario: req.usuario._id,
         empresa: body.empresa
     });
@@ -200,6 +259,7 @@ app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
         });
 
     });
+
 
 });
 

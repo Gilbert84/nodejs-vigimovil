@@ -1,7 +1,7 @@
 var { io } = require('../server');
 var { Usuarios } = require('../class/usuarios');
-var { Dispositivos } = require('../class/devices');
-
+var { Dispositivos } = require('../class/dispositivo.class');
+var Dispositivo = require('../models/dispositivo.model');
 
 var crearMensaje = (nombre, mensaje) => {
 
@@ -41,11 +41,27 @@ io.on('connection', (socket) => {
 
     });
 
-    socket.on('entrarDev', (data, callback) => {
-        dispositivos.validarData(socket, data); // validamos la info
-        socket.broadcast.to(data.ruta).emit('listaDispositivo', dispositivos.getDispositivoPorRuta(data.ruta));
-        socket.broadcast.to(data.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ data.nombre } se unió`));
-        callback(dispositivos.getDispositivoPorRuta(data.ruta));
+    //dispositivo previamente registrado y en linea
+    socket.on('onlineDispositivo',( dispositivo , callback )=>{
+        console.log('en linea',dispositivo);
+
+    });
+
+    socket.on('registroDispositivo', (dispositivo, callback ) => {
+        
+        dispositivos.crearDispositivo(dispositivo)
+                    .then((resp)=>{        
+                        callback(resp);//devuelvo el callback al dispositivo
+                    })
+                    .catch((err)=>{
+                        callback(err);//devuelvo el callback al dispositivo
+                    });
+
+        //dispositivos.validarData(socket, data); // validamos la info
+        //socket.broadcast.to(data.ruta).emit('listaDispositivo', dispositivos.getDispositivoPorRuta(data.ruta));
+        //socket.broadcast.to(data.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ data.nombre } se unió`));
+        //callback(dispositivos.getDispositivoPorRuta(data.ruta));
+        //socket.emit('mensajeDispositivo', crearMensaje('Administrador', `${ dispositivo.nombre } entro`));
     });
 
 
@@ -61,6 +77,7 @@ io.on('connection', (socket) => {
     });
 
 
+    //ejecutamos limpieza de clientes y dispositivos
     socket.on('disconnect', () => {
 
         var personaBorrada = usuarios.borrarPersona(socket.id);
@@ -73,6 +90,8 @@ io.on('connection', (socket) => {
             socket.broadcast.to(dispositivoBorrado.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ dispositivoBorrado.nombre } salió`));
             socket.broadcast.to(dispositivoBorrado.ruta).emit('listaPersona', usuarios.getPersonasPorSala(dispositivoBorrado.ruta));
         }
+
+        socket.broadcast.emit('crearMensaje',{server:'Administrador',mensaje:`${'salio'+ socket.id}`});
 
         //console.log('salio id: ', socket.id);
 

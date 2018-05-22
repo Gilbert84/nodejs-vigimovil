@@ -3,7 +3,7 @@ var express = require('express');
 var app = express();
 
 //nombres rutass de navegacion + el path de la ruta
-app.use('/device', require('./device'));
+app.use('/dispositivo', require('./dispositivo.route'));
 app.use('/usuario', require('./usuario'));
 app.use('/empresa', require('./empresa'));
 app.use('/operario', require('./operario'));
