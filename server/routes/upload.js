@@ -16,6 +16,45 @@ app.use(fileUpload());
 
 
 
+//https://www.npmjs.com/package/vcards-js
+//https://github.com/alexeyten/qr-image
+var qr = require('qr-image');
+app.get('/qr',(req,res,next)=>{
+
+    var vCard = require('vcards-js');
+    //create a new vCard
+    vCard = vCard();
+ 
+    //set properties
+    vCard.firstName = 'Gilberto';
+    vCard.lastName = 'Hernandez';
+    vCard.organization = 'BellanitaGroup';
+    vCard.uid = '69531f4a-c34d-4a1e-8922-bd38a9476a53';
+    vCard.role = 'electronico';
+    vCard.cellPhone = '312-429-9062';
+    vCard.version = '4.0';
+ 
+    //set content-type and disposition including desired filename
+    //res.set('Content-Type', 'text/vcard; name="enesser.vcf"');
+    //res.set('Content-Disposition', 'inline; filename="enesser.vcf"');
+ 
+    //send the response
+    //res.send(vCard.getFormattedString());
+    
+
+    var midato='tipo:cualquier cosa,token:qhquahhuahus';
+
+    var code = qr.image( midato , { type: 'png',size: 10, ec_level: 'L'});
+    res.setHeader('Content-type', 'image/png');  //sent qr image to client side
+    code.pipe(res);
+    //console.log(vCard.getFormattedString());
+
+
+});
+
+
+
+
 
 app.put('/:tipo/:id', (req, res, next) => {
 
