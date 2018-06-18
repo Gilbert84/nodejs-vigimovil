@@ -1,7 +1,13 @@
 var { io } = require('../server');
+var { ControlFlota } =require('../class/control-flota');
 var { Usuarios } = require('../class/usuarios');
 var { Dispositivos } = require('../class/dispositivo.class');
 var Dispositivo = require('../models/dispositivo.model');
+
+
+let controlFlota= new ControlFlota();
+
+
 
 var crearMensaje = (nombre, mensaje) => {
 
@@ -77,6 +83,43 @@ io.on('connection', (socket) => {
     });
 
 
+
+
+    // Mensajes privados
+    socket.on('mensajePrivado', data => {
+
+        let persona = usuarios.getPersona(socket.id);
+        socket.broadcast.to(data.para).emit('mensajePrivado', crearMensaje(persona.nombre, data.mensaje));
+
+    });
+
+
+    socket.on('siguienteTiket',(data, callback )=>{
+        let siguiente = controlFlota.siguienteDespacho();
+        console.log(siguiente);
+        callback(siguiente);
+    });
+
+    socket.on('atenderDespacho',(data,callback)=>{
+
+        if(!data.escritorio){
+            return callback({
+                err:true,
+                mensaje:'el escritorio es necesario'
+            });
+        }
+
+        let atenderDespacho= controlFlota.atenderDespacho(data.escritorio);
+
+        callback(atenderDespacho);
+
+
+    });
+
+
+    socket.emit('estadoActual',{ actual: controlFlota.obtenerUltimoDespacho() });
+
+
     //ejecutamos limpieza de clientes y dispositivos
     socket.on('disconnect', () => {
 
@@ -94,14 +137,6 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('crearMensaje',{server:'Administrador',mensaje:`${'salio'+ socket.id}`});
 
         //console.log('salio id: ', socket.id);
-
-    });
-
-    // Mensajes privados
-    socket.on('mensajePrivado', data => {
-
-        let persona = usuarios.getPersona(socket.id);
-        socket.broadcast.to(data.para).emit('mensajePrivado', crearMensaje(persona.nombre, data.mensaje));
 
     });
 

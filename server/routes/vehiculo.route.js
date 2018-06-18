@@ -7,91 +7,38 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
-var Operario = require('../models/operario');
+var Vehiculo = require('../models/vehiculo.model');
 
 
 // ==========================================
-//  Autenticación normal operario
-// ==========================================
-app.post('/login', (req, res) => {
-
-
-    var body = req.body;
-    console.log(body);
-
-    Operario.findOne({ alias: body.alias }, (err, operarioDB) => {
-
-        console.log(operarioDB);
-
-        if (err) {
-            return res.status(500).json({
-                ok: false,
-                mensaje: 'Error al buscar operario',
-                errors: err
-            });
-        }
-
-        if (!operarioDB) {
-            return res.status(200).json({
-                ok: false,
-                mensaje: 'Credenciales incorrectas',
-                errors: err
-            });
-        }
-        if (!bcrypt.compareSync(body.password, operarioDB.password)) {
-            return res.status(200).json({
-                ok: false,
-                mensaje: 'Credenciales incorrectas',
-                errors: err
-            });
-        }
-
-
-        // // Crear un token!!!
-        operarioDB.password = ':)';
-
-        var token = jwt.sign({ operario: operarioDB }, SEED, { expiresIn: 43200 }); // 12 horas
-
-        res.status(200).json({
-             ok: true,
-             operario: operarioDB,
-             token: token,
-             id: operarioDB._id,
-        });
-
-    }).populate('empresa', 'nombre');
-
-
-});
-
-// ==========================================
-// Obtener todos los operarios
+// Obtener todos los vehiculos
 // ==========================================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Operario.find({})
+    Vehiculo.find({})
         .skip(desde)
         .limit(5)
         .populate('usuario', 'nombre email')
         .populate('empresa', 'nombre')
+        .populate('dispositivo','nombre')
         .exec(
-            (err, operarios) => {
+            (err, vehiculos) => {
 
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error cargando operario',
+                        mensaje: 'Error cargando vehiculo',
                         errors: err
                     });
                 }
 
-                Operario.count({}, (err, conteo) => {
+                Vehiculo.count({}, (err, conteo) => {
                     res.status(200).json({
                         ok: true,
-                        operarios: operarios,
+                        vehiculos: vehiculos,
                         total: conteo
                     });
 
@@ -101,36 +48,37 @@ app.get('/', (req, res, next) => {
 });
 
 // ==========================================
-// Obtener operario
+// Obtener vehiculo
 // ==========================================
 app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 
-    Operario.findById(id)
+    Vehiculo.findById(id)
         .populate('usuario', 'nombre email img')
         .populate('empresa')
-        .exec((err, operario) => {
+        .populate('dispositivo','nombre')
+        .exec((err, vehiculo) => {
 
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al buscar operario',
+                    mensaje: 'Error al buscar vehiculo',
                     errors: err
                 });
             }
 
-            if (!operario) {
+            if (!vehiculo) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'El operario con el id ' + id + ' no existe',
-                    errors: { message: 'No existe un operario con ese ID' }
+                    mensaje: 'El vehiculo con el id ' + id + ' no existe',
+                    errors: { message: 'No existe un vehiculo con ese ID' }
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                operario: operario
+                vehiculo: vehiculo
             });
 
         })
@@ -139,50 +87,50 @@ app.get('/:id', (req, res) => {
 });
 
 // ==========================================
-// Actualizar Operario
+// Actualizar Vehiculo
 // ==========================================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
 
-    Operario.findById(id, (err, operario) => {
+    Vehiculo.findById(id, (err, vehiculo) => {
 
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al buscar operario',
+                mensaje: 'Error al buscar vehiculo',
                 errors: err
             });
         }
 
-        if (!operario) {
+        if (!vehiculo) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'El operario con el id ' + id + ' no existe',
-                errors: { message: 'No existe un operario con ese ID' }
+                mensaje: 'El vehiculo con el id ' + id + ' no existe',
+                errors: { message: 'No existe un vehiculo con ese ID' }
             });
         }
 
 
-        operario.nombre = body.nombre;
-        operario.usuario = req.usuario._id;
-        operario.empresa = body.empresa;
+        vehiculo.nombre = body.nombre;
+        vehiculo.usuario = req.usuario._id;
+        vehiculo.empresa = body.empresa;
 
-        operario.save((err, operarioGuardado) => {
+        vehiculo.save((err, vehiculoGuardado) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar operario',
+                    mensaje: 'Error al actualizar vehiculo',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                operario: operarioGuardado
+                vehiculo: vehiculoGuardado
             });
 
         });
@@ -194,33 +142,37 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ==========================================
-// Crear un nuevo operario
+// Crear un nuevo vehiculo
 // ==========================================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-
-    var operario = new Operario({
-        nombre: body.nombre,
-        alias:body.alias,
-        password:bcrypt.hashSync(body.password, 10),
+    console.log('vehiculo',req.body);
+    var vehiculo = new Vehiculo({
+        placa: body.placa,
+        interno:body.interno,
+        categoria:body.categoria,
+        capacidad:body.capacidad,
         usuario: req.usuario._id,
-        empresa: body.empresa
+        empresa: body.empresa,
+        dispositivo: body.dispositivo,
+        modelo:body.modelo
     });
 
-    operario.save((err, operarioGuardado) => {
+    vehiculo.save((err, vehiculoGuardado) => {
 
         if (err) {
+            console.log('error',err);
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear operario',
+                mensaje: 'Error al crear vehiculo',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            operario: operarioGuardado
+            vehiculo: vehiculoGuardado
         });
 
 
@@ -230,33 +182,33 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ============================================
-//   Borrar un operario por el id
+//   Borrar un vehiculo por el id
 // ============================================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 
-    Operario.findByIdAndRemove(id, (err, operarioBorrado) => {
+    Vehiculo.findByIdAndRemove(id, (err, vehiculoBorrado) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error borrar operario',
+                mensaje: 'Error borrar vehiculo',
                 errors: err
             });
         }
 
-        if (!operarioBorrado) {
+        if (!vehiculoBorrado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe un operario con ese id',
-                errors: { message: 'No existe un operario con ese id' }
+                mensaje: 'No existe un vehiculo con ese id',
+                errors: { message: 'No existe un vehiculo con ese id' }
             });
         }
 
         res.status(200).json({
             ok: true,
-            operario: operarioBorrado
+            vehiculo: vehiculoBorrado
         });
 
     });

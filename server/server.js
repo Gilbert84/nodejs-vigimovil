@@ -46,7 +46,7 @@ var server = http.createServer(app);
 
 // IO = esta es la comunicacion del backend
 module.exports.io = socketIO(server);
-require('./sockets/socket');
+require('./sockets/index.socket');
 
 
 // Escuchar peticiones

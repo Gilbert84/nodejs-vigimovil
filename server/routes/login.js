@@ -197,11 +197,12 @@ function obtenerMenu(ROLE) {
             titulo: 'Principal',
             icono: 'mdi mdi-gauge',
             submenu: [
-                { titulo: 'Dashboard', url: '/dashboard' },
-                { titulo: 'ProgressBar', url: '/progress' },
-                { titulo: 'Gráficas', url: '/graficas1' },
-                { titulo: 'Promesas', url: '/promesas' },
-                { titulo: 'RxJs', url: '/rxjs' }
+                { titulo: 'Seguimiento', url: '/dashboard' },
+                { titulo: 'Despacho', url: '/despacho' }
+                //{ titulo: 'ProgressBar', url: '/progress' },
+                //{ titulo: 'Gráficas', url: '/graficas1' },
+                //{ titulo: 'Promesas', url: '/promesas' },
+                //{ titulo: 'RxJs', url: '/rxjs' }
             ]
         } //,
         // {
@@ -228,7 +229,10 @@ function obtenerMenu(ROLE) {
                 {   titulo: 'Usuarios', url: '/usuarios' },
                 {   titulo: 'Empresas', url: '/empresas' },
                 {   titulo: 'Operarios', url: '/operarios' },
-                {   titulo: 'Dispositivos', url: '/dispositivos' }
+                {   titulo: 'Vehiculos', url: '/vehiculos' },
+                {   titulo: 'Dispositivos', url: '/dispositivos' },
+                {   titulo: 'Rutas', url: '/rutas' },
+                {   titulo: 'Google Map', url: '/google-map' }
             ]
         });
     }

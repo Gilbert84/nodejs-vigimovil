@@ -17,6 +17,7 @@ var dispositivoSchema = new Schema({
   imei:{ type: String , required: false },
   imsi:{ type: String , required: false},
   iccid:{ type: String , required: false},
+  img: { type: String, required: false },
   activo:{ type: Boolean , required: false},
   categoria: { type: String, required: true, default: 'TABLET', enum: categoriasValidas }
 });

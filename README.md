@@ -38,3 +38,8 @@ git push origin master
 
 git tag -a v0.0.1 -m "socket-io ok" 
 git push --tags
+
+
+# comando de nodemon para que solo este pendiente de .js y html
+
+nodemon server/server -e js,html

@@ -9,6 +9,9 @@ var app = express();
 var Usuario = require('../models/usuario');
 var Operario = require('../models/operario');
 var Empresa = require('../models/empresa');
+var Vehiculo = require('../models/vehiculo.model');
+var Dispositivo = require('../models/dispositivo.model');
+var TipoMarcador = require('../models/google-map/tipo-marcador.model');
 
 
 // default options
@@ -62,7 +65,7 @@ app.put('/:tipo/:id', (req, res, next) => {
     var id = req.params.id;
 
     // tipos de colección
-    var tiposValidos = ['empresas', 'operarios', 'usuarios'];
+    var tiposValidos = ['empresas', 'operarios', 'usuarios','vehiculos','dispositivos','tipo-marcadores'];
     if (tiposValidos.indexOf(tipo) < 0) {
         return res.status(400).json({
             ok: false,
@@ -234,6 +237,108 @@ function subirPorTipo(tipo, id, nombreArchivo, res) {
                     ok: true,
                     mensaje: 'Imagen de empresa actualizada',
                     empresa: empresaActualizado
+                });
+
+            })
+
+        });
+    }
+
+    if (tipo === 'dispositivos') {
+
+        Dispositivo.findById(id, (err, dispositivo) => {
+
+            if (!dispositivo) {
+                return res.status(400).json({
+                    ok: true,
+                    mensaje: 'Dispositivo no existe',
+                    errors: { message: 'Dispositivo no existe' }
+                });
+            }
+
+            var pathViejo = './uploads/dispositivos/' + dispositivo.img;
+
+            // Si existe, elimina la imagen anterior
+            if (fs.existsSync(pathViejo)) {
+                fs.unlink(pathViejo);
+            }
+
+            dispositivo.img = nombreArchivo;
+
+            dispositivo.save((err, dispositivoActualizado) => {
+
+                return res.status(200).json({
+                    ok: true,
+                    mensaje: 'Imagen dispositivo actualizada',
+                    dispositivo: dispositivoActualizado
+                });
+
+            })
+
+        });
+    }
+
+    if (tipo === 'vehiculos') {
+
+        Vehiculo.findById(id, (err, vehiculo) => {
+
+            if (!vehiculo) {
+                return res.status(400).json({
+                    ok: true,
+                    mensaje: 'Vehiculo no existe',
+                    errors: { message: 'Vehiculo no existe' }
+                });
+            }
+
+            var pathViejo = './uploads/vehiculos/' + vehiculo.img;
+
+            // Si existe, elimina la imagen anterior
+            if (fs.existsSync(pathViejo)) {
+                fs.unlink(pathViejo);
+            }
+
+            vehiculo.img = nombreArchivo;
+
+            vehiculo.save((err, vehiculoActualizado) => {
+
+                return res.status(200).json({
+                    ok: true,
+                    mensaje: 'Imagen de vehiculo actualizada',
+                    vehiculo: vehiculoActualizado
+                });
+
+            })
+
+        });
+    }
+
+    if (tipo === 'tipo-marcadores') {
+
+        TipoMarcador.findById(id, (err, tipoMarcador) => {
+
+            if (!tipoMarcador) {
+                return res.status(400).json({
+                    ok: true,
+                    mensaje: 'Marcador no existe',
+                    errors: { message: 'Marcador no existe' }
+                });
+            }
+
+            var pathViejo = './uploads/tipo-marcadores/' + tipoMarcador.img;
+
+            // Si existe, elimina la imagen anterior
+            if (fs.existsSync(pathViejo)) {
+                fs.unlink(pathViejo);
+            }
+
+            tipoMarcador.img = nombreArchivo;
+
+            tipoMarcador.save((err, tipoMarcadorActualizado) => {
+
+                return res.status(200).json({
+                    ok: true,
+                    mensaje: 'Imagen de tipo marcador actualizada',
+                    tipoMarcador: tipoMarcadorActualizado
                 });
 
             })
