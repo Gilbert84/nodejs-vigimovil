@@ -1,125 +1,134 @@
 var express = require('express');
+var bcrypt = require('bcryptjs');
+var jwt = require('jsonwebtoken');
+var SEED = require('../../config/google.config').SEED;
 
 var mdAutenticacion = require('../../middlewares/autenticacion');
 
 var app = express();
 
-var TipoMarcador = require('../../models/google-map/tipo-marcador.model');
+var Ruta = require('../../models/google-map/ruta.model');
+
+
 // ==========================================
-// Obtener todos los tipoMarcadores
+// Obtener todos los rutas
 // ==========================================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    TipoMarcador.find({})
+    Ruta.find({})
         .skip(desde)
         .limit(5)
-        //.populate('usuario', 'nombre email')
+        .populate('origen')
+        .populate('destino')
         .exec(
-            (err, tipoMarcadores) => {
+            (err, rutas) => {
 
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error cargando tipoMarcador',
+                        mensaje: 'Error cargando ruta',
                         errors: err
                     });
                 }
 
-                TipoMarcador.count({}, (err, conteo) => {
-
+                Ruta.count({}, (err, conteo) => {
                     res.status(200).json({
                         ok: true,
-                        tipoMarcadores: tipoMarcadores,
+                        rutas: rutas,
                         total: conteo
                     });
+
                 })
 
             });
 });
 
 // ==========================================
-//  Obtener TipoMarcador por ID
+// Obtener ruta
 // ==========================================
 app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 
-    TipoMarcador.findById(id)
-        //.populate('usuario', 'nombre img email')
-        .exec((err, tipoMarcador) => {
+    Ruta.findById(id)
+        .populate('origen')
+        .populate('destino')
+        .exec((err, ruta) => {
+
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al buscar tipoMarcador',
+                    mensaje: 'Error al buscar ruta',
                     errors: err
                 });
             }
 
-            if (!tipoMarcador) {
+            if (!ruta) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'La tipoMarcador con el id ' + id + 'no existe',
-                    errors: { message: 'No existe una tipoMarcador con ese ID' }
+                    mensaje: 'El ruta con el id ' + id + ' no existe',
+                    errors: { message: 'No existe un ruta con ese ID' }
                 });
             }
+
             res.status(200).json({
                 ok: true,
-                tipoMarcador: tipoMarcador
+                ruta: ruta
             });
+
         })
-})
 
 
-
-
+});
 
 // ==========================================
-// Actualizar TipoMarcador
+// Actualizar Ruta
 // ==========================================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
 
-    TipoMarcador.findById(id, (err, tipoMarcador) => {
+    Ruta.findById(id, (err, ruta) => {
 
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al buscar tipoMarcador',
+                mensaje: 'Error al buscar ruta',
                 errors: err
             });
         }
 
-        if (!tipoMarcador) {
+        if (!ruta) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'La tipoMarcador con el id ' + id + ' no existe',
-                errors: { message: 'No existe una tipoMarcador con ese ID' }
+                mensaje: 'El ruta con el id ' + id + ' no existe',
+                errors: { message: 'No existe un ruta con ese ID' }
             });
         }
 
 
-        tipoMarcador.nombre = body.nombre;
-        tipoMarcador.usuario = req.usuario._id;
+        ruta.nombre = body.nombre;
+        ruta.usuario = req.usuario._id;
+        ruta.empresa = body.empresa;
 
-        tipoMarcador.save((err, tipoMarcadorGuardado) => {
+        ruta.save((err, rutaGuardada) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar tipoMarcador',
+                    mensaje: 'Error al actualizar ruta',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                tipoMarcador: tipoMarcadorGuardado
+                ruta: rutaGuardada
             });
 
         });
@@ -131,30 +140,36 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ==========================================
-// Crear un nuevo tipoMarcador
+// Crear un nuevo ruta
 // ==========================================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-
-    var tipoMarcador = new TipoMarcador({
-        nombre: body.nombre,
-        usuario: req.usuario._id
+    console.log('ruta',req.body);
+    var ruta = new Ruta({
+        puntosRef: body.puntosRef,
+        puntosControl:body.puntosControl,
+        nombre:body.nombre,
+        codigo:body.codigo,
+        usuario: req.usuario._id,
+        origen: body.origen,
+        destino: body.destino
     });
 
-    tipoMarcador.save((err, tipoMarcadorGuardado) => {
+    ruta.save((err, rutaGuardada) => {
 
         if (err) {
+            console.log('error',err);
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear tipoMarcador',
+                mensaje: 'Error al crear ruta',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            tipoMarcador: tipoMarcadorGuardado
+            ruta: rutaGuardada
         });
 
 
@@ -164,36 +179,37 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ============================================
-//   Borrar un tipoMarcador por el id
+//   Borrar un ruta por el id
 // ============================================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 
-    TipoMarcador.findByIdAndRemove(id, (err, tipoMarcadorBorrado) => {
+    Ruta.findByIdAndRemove(id, (err, rutaBorrada) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al borrar tipoMarcador',
+                mensaje: 'Error borrar ruta',
                 errors: err
             });
         }
 
-        if (!tipoMarcadorBorrado) {
+        if (!rutaBorrada) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe una tipoMarcador con ese id',
-                errors: { message: 'No existe una tipoMarcador con ese id' }
+                mensaje: 'No existe un ruta con ese id',
+                errors: { message: 'No existe un ruta con ese id' }
             });
         }
 
         res.status(200).json({
             ok: true,
-            tipoMarcador: tipoMarcadorBorrado
+            ruta: rutaBorrada
         });
 
     });
+
 
 });
 
