@@ -10,12 +10,7 @@ var Marcador = require('../../models/google-map/marcador.model');
 // ==========================================
 app.get('/', (req, res, next) => {
 
-    var desde = req.query.desde || 0;
-    desde = Number(desde);
-
     Marcador.find({})
-        .skip(desde)
-        .limit(5)
         .populate('tipo', 'nombre img')
         .exec(
             (err, marcadores) => {
@@ -48,7 +43,7 @@ app.get('/:id', (req, res) => {
     var id = req.params.id;
 
     Marcador.findById(id)
-        //.populate('usuario', 'nombre img email')
+        .populate('tipo', 'nombre img')
         .exec((err, marcador) => {
             if (err) {
                 return res.status(500).json({
@@ -103,8 +98,13 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
             });
         }
 
-
         marcador.nombre = body.nombre;
+        marcador.lat = body.lat;
+        marcador.lng = body.lng;
+        marcador.direccion = body.direccion;
+        marcador.descripcion = body.descripcion;
+        marcador.tipo = body.tipo._id;
+        marcador.arrastable = body.arrastable;
         marcador.usuario = req.usuario._id;
 
         marcador.save((err, marcadorGuardado) => {
@@ -136,8 +136,6 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-
-    console.log(body);
 
     var marcador = new Marcador({
         lat:body.lat,

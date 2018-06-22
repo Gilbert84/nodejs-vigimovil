@@ -231,7 +231,6 @@ function obtenerMenu(ROLE) {
                 {   titulo: 'Operarios', url: '/operarios' },
                 {   titulo: 'Vehiculos', url: '/vehiculos' },
                 {   titulo: 'Dispositivos', url: '/dispositivos' },
-                {   titulo: 'Rutas', url: '/rutas' },
                 {   titulo: 'Google Map', url: '/google-map' }
             ]
         });

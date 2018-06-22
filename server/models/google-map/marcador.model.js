@@ -5,7 +5,7 @@ var marcadorSchema = new Schema({
 
     lat: { type: Number,unique: true, required: [true, 'la latitud es necesaria'] },
     lng: { type: Number,unique: true, required: [true, 'la longitud es necesaria'] },
-    direccion: { type: String,unique: true, required: [true, 'la direccion es necesaria'] },
+    direccion: { type: String, required: [true, 'la direccion es necesaria'] },
     codigo: { type: String,unique: true, required: [true, 'el codigo es necesario'] },
     arrastable: { type: Boolean, required: [true, 'el estado arrastable es nesesario'] },
     nombre: { type: String, unique: true,required: [true, 'Campo requerido'] },
