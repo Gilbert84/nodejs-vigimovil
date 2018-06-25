@@ -6,6 +6,8 @@ var Empresa = require('../models/empresa');
 var Operario = require('../models/operario');
 var Usuario = require('../models/usuario');
 var Dispositivo = require('../models/dispositivo.model');
+var Vehiculo = require('../models/vehiculo.model');
+var Ruta = require('../models/google-map/ruta.model');
 
 // ==============================
 // Busqueda por colección
@@ -34,11 +36,17 @@ app.get('/coleccion/:tabla/:busqueda', (req, res) => {
         case 'dispositivos':
             promesa = buscarDispositivos(busqueda, regex);
             break;
+        case 'vehiculos':
+            promesa = buscarVehiculos(busqueda, regex);
+            break;
+        case 'rutas':
+            promesa = buscarRutas(busqueda, regex);
+        break;
 
         default:
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Los tipos de busqueda sólo son: usuarios, operarios, dispositivos y empresas',
+                mensaje: 'Los tipos de busqueda sólo son: usuarios, operarios, vehiculos,rutas,dispositivos y empresas',
                 error: { message: 'Tipo de tabla/coleccion no válido' }
             });
 
@@ -142,6 +150,8 @@ function buscarDispositivos(busqueda, regex) {
     });
 }
 
+
+
 function buscarUsuarios(busqueda, regex) {
 
     return new Promise((resolve, reject) => {
@@ -163,6 +173,59 @@ function buscarUsuarios(busqueda, regex) {
     });
 }
 
+
+function buscarVehiculos(busqueda, regex) {
+
+    return new Promise((resolve, reject) => {
+
+        Vehiculo.find({}, 'placa interno')
+            .or([{ 'placa': regex }, { 'interno': regex }])
+            .exec((err, vehiculos) => {
+
+                if (err) {
+                    reject('Error al cargar vehiculos', err);
+                } else {
+                    resolve(vehiculos);
+                }
+
+
+            })
+
+
+    });
+}
+
+
+function buscarRutas(busqueda, regex) {
+
+    return new Promise((resolve, reject) => {
+
+        Ruta.find({}, 'nombre codigo')
+            .or([{ 'nombre': regex }, { 'codigo': regex }])
+            .populate('origen')
+            .populate('destino')
+            .exec((err, rutas) => {
+
+                if (err) {
+                    reject('Error al cargar rutas', err);
+                } else {
+                    Ruta.populate(rutas,
+                        {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
+                        (error,rutas)=>{
+                            if (error){
+                                reject('Error al buscar rutas', error);
+                            }else{
+ 
+                                resolve(rutas);
+                            } 
+
+                    });
+                }
+
+            })
+
+    });
+}
 
 
 module.exports = app;

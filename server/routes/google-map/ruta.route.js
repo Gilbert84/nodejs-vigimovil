@@ -34,14 +34,20 @@ app.get('/', (req, res, next) => {
                     });
                 }
 
-                Ruta.count({}, (err, conteo) => {
-                    res.status(200).json({
-                        ok: true,
-                        rutas: rutas,
-                        total: conteo
-                    });
 
-                })
+                Ruta.populate(rutas,
+                    {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
+                    (error,rutas)=>{
+                        Ruta.count({}, (err, conteo) => {
+                            res.status(200).json({
+                                ok: true,
+                                rutas: rutas,
+                                total: conteo
+                            });
+        
+                        });
+                });
+                
 
             });
 });
@@ -74,9 +80,13 @@ app.get('/:id', (req, res) => {
                 });
             }
 
-            res.status(200).json({
-                ok: true,
-                ruta: ruta
+            Ruta.populate(ruta,
+                {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
+                (error,tipo)=>{
+                    res.status(200).json({
+                        ok: true,
+                        ruta: ruta
+                    });
             });
 
         })
@@ -111,10 +121,14 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
             });
         }
 
-
-        ruta.nombre = body.nombre;
-        ruta.usuario = req.usuario._id;
-        ruta.empresa = body.empresa;
+        ruta.puntosRef = body.puntosRef,
+        ruta.puntosControl = body.puntosControl,
+        ruta.nombre = body.nombre,
+        ruta.codigo = body.codigo,
+        ruta.usuario = req.usuario._id,
+        ruta.origen = body.origen,
+        ruta.destino = body.destino,
+        ruta.visible = body.visible
 
         ruta.save((err, rutaGuardada) => {
 
@@ -145,7 +159,6 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-    console.log('ruta',req.body);
     var ruta = new Ruta({
         puntosRef: body.puntosRef,
         puntosControl:body.puntosControl,
@@ -153,7 +166,8 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         codigo:body.codigo,
         usuario: req.usuario._id,
         origen: body.origen,
-        destino: body.destino
+        destino: body.destino,
+        visible: body.visible
     });
 
     ruta.save((err, rutaGuardada) => {

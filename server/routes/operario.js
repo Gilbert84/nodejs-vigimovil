@@ -203,6 +203,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     var operario = new Operario({
         nombre: body.nombre,
         alias:body.alias,
+        identificacion:body.identificacion,
         password:bcrypt.hashSync(body.password, 10),
         usuario: req.usuario._id,
         empresa: body.empresa
