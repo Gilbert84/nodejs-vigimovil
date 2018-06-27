@@ -4,15 +4,15 @@ var Schema = mongoose.Schema;
 
 
 
-var roleSchema = new Schema({
+var estadoSchema = new Schema({
     nombre: { 
         type: String, 
         required: [true, 'El nombre es necesario'],
         unique: true
     },
     usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' }
-}, { collection: 'Roles' });
+}, { collection: 'Estados' });
 
-roleSchema.plugin(uniqueValidator, { message: 'el {PATH} debe de ser único' });
+estadoSchema.plugin(uniqueValidator, { message: 'el {PATH} debe de ser único' });
 
-module.exports = mongoose.model('Role', roleSchema);
+module.exports = mongoose.model('Estado', estadoSchema);

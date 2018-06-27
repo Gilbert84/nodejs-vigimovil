@@ -7,41 +7,41 @@ var mdAutenticacion = require('../../middlewares/autenticacion');
 
 var app = express();
 
-var Ruta = require('../../models/google-map/ruta.model');
+var Viaje = require('../../models/despacho/viaje.model');
 
 
 // ==========================================
-// Obtener todos los rutas
+// Obtener todos los viajes
 // ==========================================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Ruta.find({})
+    Viaje.find({})
         .skip(desde)
         .limit(5)
-        .populate('origen')
-        .populate('destino')
+        .populate('asigancion')
+        .populate('ruta')
         .exec(
-            (err, rutas) => {
+            (err, viajes) => {
 
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error cargando ruta',
+                        mensaje: 'Error cargando viaje',
                         errors: err
                     });
                 }
 
 
-                Ruta.populate(rutas,
-                    {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
-                    (error,rutas)=>{
-                        Ruta.count({}, (err, conteo) => {
+                Viaje.populate(viajes,
+                    {path:'asigancion.operario',select: 'nombre identificacion',model:'Operario'},
+                    (error,viajes)=>{
+                        Viaje.count({}, (err, conteo) => {
                             res.status(200).json({
                                 ok: true,
-                                rutas: rutas,
+                                viajes: viajes,
                                 total: conteo
                             });
         
@@ -53,39 +53,39 @@ app.get('/', (req, res, next) => {
 });
 
 // ==========================================
-// Obtener ruta
+// Obtener viaje
 // ==========================================
 app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 
-    Ruta.findById(id)
-        .populate('origen')
-        .populate('destino')
-        .exec((err, ruta) => {
+    Viaje.findById(id)
+        .populate('asigancion')
+        .populate('ruta')
+        .exec((err, viaje) => {
 
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al buscar ruta',
+                    mensaje: 'Error al buscar viaje',
                     errors: err
                 });
             }
 
-            if (!ruta) {
+            if (!viaje) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'El ruta con el id ' + id + ' no existe',
-                    errors: { message: 'No existe un ruta con ese ID' }
+                    mensaje: 'El viaje con el id ' + id + ' no existe',
+                    errors: { message: 'No existe un viaje con ese ID' }
                 });
             }
 
-            Ruta.populate(ruta,
-                {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
+            Viaje.populate(viaje,
+                {path:'asigancion.operario',select: 'nombre identificacion',model:'Operario'},
                 (error,tipo)=>{
                     res.status(200).json({
                         ok: true,
-                        ruta: ruta
+                        viaje: viaje
                     });
             });
 
@@ -95,54 +95,52 @@ app.get('/:id', (req, res) => {
 });
 
 // ==========================================
-// Actualizar Ruta
+// Actualizar Viaje
 // ==========================================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
 
-    Ruta.findById(id, (err, ruta) => {
+    Viaje.findById(id, (err, viaje) => {
 
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al buscar ruta',
+                mensaje: 'Error al buscar viaje',
                 errors: err
             });
         }
 
-        if (!ruta) {
+        if (!viaje) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'El ruta con el id ' + id + ' no existe',
-                errors: { message: 'No existe un ruta con ese ID' }
+                mensaje: 'El viaje con el id ' + id + ' no existe',
+                errors: { message: 'No existe un viaje con ese ID' }
             });
         }
 
-        ruta.puntosRef = body.puntosRef;
-        ruta.puntosControl = body.puntosControl;
-        ruta.nombre = body.nombre;
-        ruta.codigo = body.codigo;
-        ruta.usuario = req.usuario._id;
-        ruta.origen = body.origen;
-        ruta.destino = body.destino;
-        ruta.visible = body.visible;
+        viaje.fechaHoraInicio = body.puntosRef;
+        viaje.fechaHoraFin = body.puntosControl;
+        viaje.pasajeros = body.nombre;
+        viaje.estado = body.codigo;
+        viaje.usuario = req.usuario._id;
+        viaje.ruta = body.origen;
 
-        ruta.save((err, rutaGuardada) => {
+        viaje.save((err, viajeGuardado) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar ruta',
+                    mensaje: 'Error al actualizar viaje',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                ruta: rutaGuardada
+                viaje: viajeGuardado
             });
 
         });
@@ -154,39 +152,31 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ==========================================
-// Crear un nuevo ruta
+// Crear un nuevo viaje
 // ==========================================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-    var ruta = new Ruta({
-        puntosRef: body.puntosRef,
-        puntosControl:body.puntosControl,
-        nombre:body.nombre,
-        codigo:body.codigo,
+    var viaje = new Viaje({
+        fechaHoraInicio: new Date(),
         usuario: req.usuario._id,
-        origen: body.origen,
-        destino: body.destino,
-        visible: body.visible,
-        distancia: body.distancia,
-        duraccion: body.duraccion,
-        pasos: body.pasos
+        ruta: body.ruta,
     });
 
-    ruta.save((err, rutaGuardada) => {
+    viaje.save((err, viajeGuardado) => {
 
         if (err) {
             console.log('error',err);
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear ruta',
+                mensaje: 'Error al crear viaje',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            ruta: rutaGuardada
+            viaje: viajeGuardado
         });
 
 
@@ -196,33 +186,33 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ============================================
-//   Borrar un ruta por el id
+//   Borrar un viaje por el id
 // ============================================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 
-    Ruta.findByIdAndRemove(id, (err, rutaBorrada) => {
+    Viaje.findByIdAndRemove(id, (err, viajeBorrado) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error borrar ruta',
+                mensaje: 'Error borrar viaje',
                 errors: err
             });
         }
 
-        if (!rutaBorrada) {
+        if (!viajeBorrado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe un ruta con ese id',
-                errors: { message: 'No existe un ruta con ese id' }
+                mensaje: 'No existe un viaje con ese id',
+                errors: { message: 'No existe un viaje con ese id' }
             });
         }
 
         res.status(200).json({
             ok: true,
-            ruta: rutaBorrada
+            viaje: viajeBorrado
         });
 
     });

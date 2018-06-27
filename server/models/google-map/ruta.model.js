@@ -6,9 +6,12 @@ var rutaSchema = new Schema({
 
     puntosRef: { type: Array, required: [false, 'El nombre de usuario es necesario'] },
     puntosControl: { type: Array, required: [false, 'Campo requerido'] },
+    pasos: { type: Array, required: [false, 'Campo requerido'] },
     nombre: { type: String, required: [true, 'Campo requerido'] },
     codigo: { type: String, required: false },
     visible:{ type: Boolean, required: true },
+    distancia:{ type: Object , required: true},
+    duraccion:{ type: Object , required: false},
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true ,

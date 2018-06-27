@@ -197,8 +197,7 @@ function obtenerMenu(ROLE) {
             titulo: 'Principal',
             icono: 'mdi mdi-gauge',
             submenu: [
-                { titulo: 'Seguimiento', url: '/dashboard' },
-                { titulo: 'Despacho', url: '/despacho' }
+                { titulo: 'Seguimiento', url: '/dashboard' }
                 //{ titulo: 'ProgressBar', url: '/progress' },
                 //{ titulo: 'Gráficas', url: '/graficas1' },
                 //{ titulo: 'Promesas', url: '/promesas' },
@@ -216,8 +215,6 @@ function obtenerMenu(ROLE) {
         // }
     ];
 
-    console.log('ROLE', ROLE);
-
     //COORDINADOR_ROLE, DESPACHADOR_ROLE, OPERADOR_ROLE
 
     if (ROLE === 'ADMIN_ROLE') {
@@ -231,7 +228,8 @@ function obtenerMenu(ROLE) {
                 {   titulo: 'Operarios', url: '/operarios' },
                 {   titulo: 'Vehiculos', url: '/vehiculos' },
                 {   titulo: 'Dispositivos', url: '/dispositivos' },
-                {   titulo: 'Google Map', url: '/google-map' }
+                {   titulo: 'Rutas', url: '/google-map' },
+                {   titulo: 'Despacho', url: '/despacho' }
             ]
         });
     }

@@ -2,9 +2,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 
-var despachoSchema = new Schema({
-    hora: { type: String, required: [true, 'El nombre es necesario'] },
-    codigo: { type: String, required: [true, 'El nombre de usuario es necesario'] },
+var asignacionSchema = new Schema({
+    fechaHora: { type: Date, required: [true, 'campo requerido'] },
+    disponible: { type: Boolean, required: [true, 'campo requerido'] },
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true 
@@ -18,7 +18,7 @@ var despachoSchema = new Schema({
         ref: 'Vehiculo',
         required: [true, 'El id del vehiculo es un campo obligatorio']
     }
-});
+}, { collection: 'Asignaciones' });
 
 
-module.exports = mongoose.model('Despacho', despachoSchema);
+module.exports = mongoose.model('Asignacion', asignacionSchema);

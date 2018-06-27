@@ -7,6 +7,7 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 var Usuario = require('../models/usuario');
+var Role = require('../models/role.model');
 
 // ==========================================
 // Obtener todos los usuarios
@@ -78,6 +79,7 @@ app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_
         usuario.nombre = body.nombre;
         usuario.email = body.email;
         usuario.role = body.role;
+        usuario.fechaActualizado = new Date();
 
         usuario.save((err, usuarioGuardado) => {
 
@@ -110,6 +112,8 @@ app.put('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN_o_
 app.post('/', (req, res) => {
 
     var body = req.body;
+
+    //this.validarRole();
 
     var usuario = new Usuario({
         nombre: body.nombre,
@@ -174,6 +178,76 @@ app.delete('/:id', [mdAutenticacion.verificaToken, mdAutenticacion.verificaADMIN
     });
 
 });
+
+
+
+function validarRole() {
+    // validamos si el rol existe
+    Role.findOne({ nombre: 'usuario' })        
+        .exec(
+        (err, role) => {
+
+            if (err) {
+                return res.status(500).json({
+                    ok: false,
+                    mensaje: 'Error cargando roles',
+                    errors: err
+                });
+            }
+
+            if (role){
+                console.log('role:',role);
+            }else {
+                Role.count({}, (err, conteo) => {
+
+                    if(!conteo>2){
+                        //creamos los tres roles principales
+                        let roleDesarrollador = new Role({
+                            nombre:'desarrollador'
+                        });
+                        let roleAdministrador = new Role({
+                            nombre:'administrador'
+                        });
+                        let roleUsuario = new Role({
+                            nombre:'usuario'
+                        });
+
+                        roleDesarrollador.save((err,roleGuardado)=>{
+                            if (err) {
+                                return res.status(400).json({
+                                    ok: false,
+                                    mensaje: 'Error al crear role',
+                                    errors: err
+                                });
+                            }
+                            console.log('role guardado:',roleGuardado);
+                        });
+                        roleAdministrador.save((err,roleGuardado)=>{
+                            if (err) {
+                                return res.status(400).json({
+                                    ok: false,
+                                    mensaje: 'Error al crear role',
+                                    errors: err
+                                });
+                            }
+                            console.log('role guardado:',roleGuardado);
+                        });
+                        roleUsuario.save((err,roleGuardado)=>{
+                            if (err) {
+                                return res.status(400).json({
+                                    ok: false,
+                                    mensaje: 'Error al crear role',
+                                    errors: err
+                                });
+                            }
+                            console.log('role guardado:',roleGuardado);
+                        });
+                    }
+                });
+            }
+
+        });
+}
 
 
 module.exports = app;

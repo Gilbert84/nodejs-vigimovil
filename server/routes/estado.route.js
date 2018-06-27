@@ -4,35 +4,35 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 
 var app = express();
 
-var Role = require('../models/role.model');
+var Estado = require('../models/estado.model');
 // ==========================================
-// Obtener todos los roles
+// Obtener todos los estados
 // ==========================================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Role.find({})
+    Estado.find({})
         .skip(desde)
         .limit(5)
         //.populate('usuario', 'nombre email')
         .exec(
-            (err, roles) => {
+            (err, estados) => {
 
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error cargando role',
+                        mensaje: 'Error cargando estado',
                         errors: err
                     });
                 }
 
-                Role.count({}, (err, conteo) => {
+                Estado.count({}, (err, conteo) => {
 
                     res.status(200).json({
                         ok: true,
-                        roles: roles,
+                        estados: estados,
                         total: conteo
                     });
                 })
@@ -41,33 +41,33 @@ app.get('/', (req, res, next) => {
 });
 
 // ==========================================
-//  Obtener Role por ID
+//  Obtener Estado por ID
 // ==========================================
 app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 
-    Role.findById(id)
+    Estado.findById(id)
         //.populate('usuario', 'nombre img email')
-        .exec((err, role) => {
+        .exec((err, estado) => {
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al buscar role',
+                    mensaje: 'Error al buscar estado',
                     errors: err
                 });
             }
 
-            if (!role) {
+            if (!estado) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'La role con el id ' + id + 'no existe',
-                    errors: { message: 'No existe una role con ese ID' }
+                    mensaje: 'La estado con el id ' + id + 'no existe',
+                    errors: { message: 'No existe una estado con ese ID' }
                 });
             }
             res.status(200).json({
                 ok: true,
-                role: role
+                estado: estado
             });
         })
 })
@@ -77,49 +77,49 @@ app.get('/:id', (req, res) => {
 
 
 // ==========================================
-// Actualizar Role
+// Actualizar Estado
 // ==========================================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
 
-    Role.findById(id, (err, role) => {
+    Estado.findById(id, (err, estado) => {
 
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al buscar role',
+                mensaje: 'Error al buscar estado',
                 errors: err
             });
         }
 
-        if (!role) {
+        if (!estado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'La role con el id ' + id + ' no existe',
-                errors: { message: 'No existe una role con ese ID' }
+                mensaje: 'La estado con el id ' + id + ' no existe',
+                errors: { message: 'No existe una estado con ese ID' }
             });
         }
 
 
-        role.nombre = body.nombre;
-        role.usuario = req.usuario._id;
+        estado.nombre = body.nombre;
+        estado.usuario = req.usuario._id;
 
-        role.save((err, roleGuardado) => {
+        estado.save((err, estadoGuardado) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar role',
+                    mensaje: 'Error al actualizar estado',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                role: roleGuardado
+                estado: estadoGuardado
             });
 
         });
@@ -131,30 +131,30 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ==========================================
-// Crear un nuevo role
+// Crear un nuevo estado
 // ==========================================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
 
-    var role = new Role({
+    var estado = new Estado({
         nombre: body.nombre,
         usuario: req.usuario._id
     });
 
-    role.save((err, roleGuardado) => {
+    estado.save((err, estadoGuardado) => {
 
         if (err) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear role',
+                mensaje: 'Error al crear estado',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            role: roleGuardado
+            estado: estadoGuardado
         });
 
 
@@ -164,33 +164,33 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ============================================
-//   Borrar un role por el id
+//   Borrar un estado por el id
 // ============================================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 
-    Role.findByIdAndRemove(id, (err, roleBorrado) => {
+    Estado.findByIdAndRemove(id, (err, estadoBorrado) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al borrar role',
+                mensaje: 'Error al borrar estado',
                 errors: err
             });
         }
 
-        if (!roleBorrado) {
+        if (!estadoBorrado) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe una role con ese id',
-                errors: { message: 'No existe una role con ese id' }
+                mensaje: 'No existe una estado con ese id',
+                errors: { message: 'No existe una estado con ese id' }
             });
         }
 
         res.status(200).json({
             ok: true,
-            role: roleBorrado
+            estado: estadoBorrado
         });
 
     });

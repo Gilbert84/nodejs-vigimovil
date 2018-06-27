@@ -7,41 +7,41 @@ var mdAutenticacion = require('../../middlewares/autenticacion');
 
 var app = express();
 
-var Ruta = require('../../models/google-map/ruta.model');
+var Asignacion = require('../../models/despacho/asignacion.model');
 
 
 // ==========================================
-// Obtener todos los rutas
+// Obtener todos los asignaciones
 // ==========================================
 app.get('/', (req, res, next) => {
 
     var desde = req.query.desde || 0;
     desde = Number(desde);
 
-    Ruta.find({})
+    Asignacion.find({})
         .skip(desde)
         .limit(5)
-        .populate('origen')
-        .populate('destino')
+        .populate('operario')
+        .populate('vehiculo')
         .exec(
-            (err, rutas) => {
+            (err, asignaciones) => {
 
                 if (err) {
                     return res.status(500).json({
                         ok: false,
-                        mensaje: 'Error cargando ruta',
+                        mensaje: 'Error cargando asignacion',
                         errors: err
                     });
                 }
 
 
-                Ruta.populate(rutas,
-                    {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
-                    (error,rutas)=>{
-                        Ruta.count({}, (err, conteo) => {
+                Asignacion.populate(asignaciones,
+                    {path:'operario.empresa vehiculo.empresa',select: 'nombre img',model:'Empresa'},
+                    (error,asignaciones)=>{
+                        Asignacion.count({}, (err, conteo) => {
                             res.status(200).json({
                                 ok: true,
-                                rutas: rutas,
+                                asignaciones: asignaciones,
                                 total: conteo
                             });
         
@@ -53,39 +53,39 @@ app.get('/', (req, res, next) => {
 });
 
 // ==========================================
-// Obtener ruta
+// Obtener asignacion
 // ==========================================
 app.get('/:id', (req, res) => {
 
     var id = req.params.id;
 
-    Ruta.findById(id)
-        .populate('origen')
-        .populate('destino')
-        .exec((err, ruta) => {
+    Asignacion.findById(id)
+        .populate('operario')
+        .populate('vehiculo')
+        .exec((err, asignacion) => {
 
             if (err) {
                 return res.status(500).json({
                     ok: false,
-                    mensaje: 'Error al buscar ruta',
+                    mensaje: 'Error al buscar asignacion',
                     errors: err
                 });
             }
 
-            if (!ruta) {
+            if (!asignacion) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'El ruta con el id ' + id + ' no existe',
-                    errors: { message: 'No existe un ruta con ese ID' }
+                    mensaje: 'El asignacion con el id ' + id + ' no existe',
+                    errors: { message: 'No existe un asignacion con ese ID' }
                 });
             }
 
-            Ruta.populate(ruta,
-                {path:'origen.tipo destino.tipo',select: 'nombre img',model:'TipoMarcador'},
+            Asignacion.populate(asignacion,
+                {path:'operario.empresa vehiculo.empresa',select: 'nombre img',model:'Empresa'},
                 (error,tipo)=>{
                     res.status(200).json({
                         ok: true,
-                        ruta: ruta
+                        asignacion: asignacion
                     });
             });
 
@@ -95,54 +95,52 @@ app.get('/:id', (req, res) => {
 });
 
 // ==========================================
-// Actualizar Ruta
+// Actualizar Asignacion
 // ==========================================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
     var body = req.body;
 
-    Ruta.findById(id, (err, ruta) => {
+    Asignacion.findById(id, (err, asignacion) => {
 
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error al buscar ruta',
+                mensaje: 'Error al buscar asignacion',
                 errors: err
             });
         }
 
-        if (!ruta) {
+        if (!asignacion) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'El ruta con el id ' + id + ' no existe',
-                errors: { message: 'No existe un ruta con ese ID' }
+                mensaje: 'El asignacion con el id ' + id + ' no existe',
+                errors: { message: 'No existe un asignacion con ese ID' }
             });
         }
 
-        ruta.puntosRef = body.puntosRef;
-        ruta.puntosControl = body.puntosControl;
-        ruta.nombre = body.nombre;
-        ruta.codigo = body.codigo;
-        ruta.usuario = req.usuario._id;
-        ruta.origen = body.origen;
-        ruta.destino = body.destino;
-        ruta.visible = body.visible;
+        asignacion.fechaHora = new Date();
+        asignacion.disponible = body.disponible;
+        asignacion.usuario = req.usuario._id;
+        asignacion.operario = body.operario;
+        asignacion.vehiculo = body.operario;
 
-        ruta.save((err, rutaGuardada) => {
+
+        asignacion.save((err, asignacionGuardada) => {
 
             if (err) {
                 return res.status(400).json({
                     ok: false,
-                    mensaje: 'Error al actualizar ruta',
+                    mensaje: 'Error al actualizar asignacion',
                     errors: err
                 });
             }
 
             res.status(200).json({
                 ok: true,
-                ruta: rutaGuardada
+                asignacion: asignacionGuardada
             });
 
         });
@@ -154,39 +152,33 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ==========================================
-// Crear un nuevo ruta
+// Crear un nuevo asignacion
 // ==========================================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-    var ruta = new Ruta({
-        puntosRef: body.puntosRef,
-        puntosControl:body.puntosControl,
-        nombre:body.nombre,
-        codigo:body.codigo,
+    var asignacion = new Asignacion({
+        fechaHora: new Date(),
+        disponible: body.disponible,
         usuario: req.usuario._id,
-        origen: body.origen,
-        destino: body.destino,
-        visible: body.visible,
-        distancia: body.distancia,
-        duraccion: body.duraccion,
-        pasos: body.pasos
+        operario: body.operario,
+        vehiculo: body.operario,
     });
 
-    ruta.save((err, rutaGuardada) => {
+    asignacion.save((err, asignacionGuardada) => {
 
         if (err) {
             console.log('error',err);
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Error al crear ruta',
+                mensaje: 'Error al crear asignacion',
                 errors: err
             });
         }
 
         res.status(201).json({
             ok: true,
-            ruta: rutaGuardada
+            asignacion: asignacionGuardada
         });
 
 
@@ -196,33 +188,33 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
 
 // ============================================
-//   Borrar un ruta por el id
+//   Borrar un asignacion por el id
 // ============================================
 app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
     var id = req.params.id;
 
-    Ruta.findByIdAndRemove(id, (err, rutaBorrada) => {
+    Asignacion.findByIdAndRemove(id, (err, asignacionBorrada) => {
 
         if (err) {
             return res.status(500).json({
                 ok: false,
-                mensaje: 'Error borrar ruta',
+                mensaje: 'Error borrar asignacion',
                 errors: err
             });
         }
 
-        if (!rutaBorrada) {
+        if (!asignacionBorrada) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'No existe un ruta con ese id',
-                errors: { message: 'No existe un ruta con ese id' }
+                mensaje: 'No existe un asignacion con ese id',
+                errors: { message: 'No existe un asignacion con ese id' }
             });
         }
 
         res.status(200).json({
             ok: true,
-            ruta: rutaBorrada
+            asignacion: asignacionBorrada
         });
 
     });
