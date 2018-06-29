@@ -2,10 +2,10 @@
 //  configuracion entorno de trabajo
 //======================================
 
-//var defaultEnv='casa';
+//var defaultEnv = 'casa';
 var defaultEnv='oficina';
 
-process.env.NODE_ENV = process.env.NODE_ENV || defaultEnv ;
+process.env.NODE_ENV = process.env.NODE_ENV || defaultEnv;
 process.env.PORT = process.env.PORT || 3000;
 
 //=======================================
@@ -14,12 +14,11 @@ process.env.PORT = process.env.PORT || 3000;
 
 var urlDB;
 
-if( process.env.NODE_ENV === 'casa'){
+if (process.env.NODE_ENV === 'casa') {
     urlDB = 'mongodb://localhost:27017/vigimovilDB';
-}
-else if( process.env.NODE_ENV === 'oficina'){
+} else if (process.env.NODE_ENV === 'oficina') {
     urlDB = 'mongodb://root:admin@localhost';
-}else{
+} else {
     urlDB = 'mongodb://admin:VentanaElectr0nica@ds141514.mlab.com:41514/vigimovildb';
 }
 

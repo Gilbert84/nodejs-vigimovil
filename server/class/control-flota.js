@@ -22,7 +22,7 @@ class ControlFlota {
         console.log(data);
 
         if (data.hoy === this.hoy){
-            //contiamos con el trabajo
+            //continuamos con el trabajo
             this.ultimo= data.ultimo;
             this.despachos=data.despachos;
             this.ultimosNdespachos=data.ultimosNdespachos;

@@ -35,19 +35,18 @@ app.get('/', (req, res, next) => {
                 }
 
 
-                Asignacion.populate(asignaciones,
-                    {path:'operario.empresa vehiculo.empresa',select: 'nombre img',model:'Empresa'},
-                    (error,asignaciones)=>{
+                Asignacion.populate(asignaciones, { path: 'operario.empresa vehiculo.empresa', select: 'nombre img', model: 'Empresa' },
+                    (error, asignaciones) => {
                         Asignacion.count({}, (err, conteo) => {
                             res.status(200).json({
                                 ok: true,
                                 asignaciones: asignaciones,
                                 total: conteo
                             });
-        
+
                         });
-                });
-                
+                    });
+
 
             });
 });
@@ -80,14 +79,13 @@ app.get('/:id', (req, res) => {
                 });
             }
 
-            Asignacion.populate(asignacion,
-                {path:'operario.empresa vehiculo.empresa',select: 'nombre img',model:'Empresa'},
-                (error,tipo)=>{
+            Asignacion.populate(asignacion, { path: 'operario.empresa vehiculo.empresa', select: 'nombre img', model: 'Empresa' },
+                (error, tipo) => {
                     res.status(200).json({
                         ok: true,
                         asignacion: asignacion
                     });
-            });
+                });
 
         })
 
@@ -125,7 +123,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         asignacion.disponible = body.disponible;
         asignacion.usuario = req.usuario._id;
         asignacion.operario = body.operario;
-        asignacion.vehiculo = body.operario;
+        asignacion.vehiculo = body.vehiculo;
 
 
         asignacion.save((err, asignacionGuardada) => {
@@ -168,7 +166,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     asignacion.save((err, asignacionGuardada) => {
 
         if (err) {
-            console.log('error',err);
+            console.log('error', err);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear asignacion',
