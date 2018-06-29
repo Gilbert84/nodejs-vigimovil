@@ -53,10 +53,10 @@ app.post('/login', (req, res) => {
         var token = jwt.sign({ operario: operarioDB }, SEED, { expiresIn: 43200 }); // 12 horas
 
         res.status(200).json({
-             ok: true,
-             operario: operarioDB,
-             token: token,
-             id: operarioDB._id,
+            ok: true,
+            operario: operarioDB,
+            token: token,
+            id: operarioDB._id,
         });
 
     }).populate('empresa', 'nombre');
@@ -167,6 +167,9 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
         operario.nombre = body.nombre;
+        operario.identificacion = body.identificacion;
+        operario.alias = body.alias;
+        operario.password = bcrypt.hashSync(body.password, 10);
         operario.usuario = req.usuario._id;
         operario.empresa = body.empresa;
 
@@ -179,6 +182,10 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                     errors: err
                 });
             }
+
+            operarioGuardado.password = ':)';
+
+            //console.log(operarioGuardado);
 
             res.status(200).json({
                 ok: true,
@@ -202,9 +209,9 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var operario = new Operario({
         nombre: body.nombre,
-        alias:body.alias,
-        identificacion:body.identificacion,
-        password:bcrypt.hashSync(body.password, 10),
+        alias: body.alias,
+        identificacion: body.identificacion,
+        password: bcrypt.hashSync(body.password, 10),
         usuario: req.usuario._id,
         empresa: body.empresa
     });
