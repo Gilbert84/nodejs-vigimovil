@@ -160,7 +160,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         disponible: body.disponible,
         usuario: req.usuario._id,
         operario: body.operario,
-        vehiculo: body.operario,
+        vehiculo: body.vehiculo
     });
 
     asignacion.save((err, asignacionGuardada) => {
