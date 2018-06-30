@@ -36,7 +36,10 @@ app.get('/', (req, res, next) => {
 
 
                 Viaje.populate(viajes,
-                    {path:'asigancion.operario',select: 'nombre identificacion',model:'Operario'},
+                    [
+                        {path:'asigancion.operario',select: 'nombre identificacion',model:'Operario'},
+                        {path:'asigancion.vehiculo',select: 'placa interno',model:'Vehiculo'}
+                    ],
                     (error,viajes)=>{
                         Viaje.count({}, (err, conteo) => {
                             res.status(200).json({
@@ -121,12 +124,10 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
             });
         }
 
-        viaje.fechaHoraInicio = body.puntosRef;
-        viaje.fechaHoraFin = body.puntosControl;
-        viaje.pasajeros = body.nombre;
-        viaje.estado = body.codigo;
+        viaje.fechaHoraFin = new Date();
         viaje.usuario = req.usuario._id;
-        viaje.ruta = body.origen;
+        viaje.ruta = body.ruta;
+
 
         viaje.save((err, viajeGuardado) => {
 
@@ -156,11 +157,15 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 // ==========================================
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
+
     var body = req.body;
     var viaje = new Viaje({
         fechaHoraInicio: new Date(),
         usuario: req.usuario._id,
         ruta: body.ruta,
+        asignacion: body.asignacion,
+        pasajeros: body.pasajeros,
+        estado: body.estado
     });
 
     viaje.save((err, viajeGuardado) => {
