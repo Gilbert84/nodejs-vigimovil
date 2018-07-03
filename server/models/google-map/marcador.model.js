@@ -10,6 +10,8 @@ var marcadorSchema = new Schema({
     arrastable: { type: Boolean, required: [true, 'el estado arrastable es nesesario'] },
     nombre: { type: String, unique: true,required: [true, 'Campo requerido'] },
     descripcion: { type: String, required: [false, 'Campo opcional'] },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}, 
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true ,

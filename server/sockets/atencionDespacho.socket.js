@@ -1,7 +1,10 @@
 var { io } = require('../server');
 var { Asignaciones } = require('../class/asignacion.class');
+var { Dispositivos, Database } = require('../class/dispositivo.class');
 
 const asignaciones = new Asignaciones();
+const dispositivos = new Dispositivos();
+const database = new Database();
 
 io.on('connection', (socket) => {
 
@@ -19,6 +22,66 @@ io.on('connection', (socket) => {
             callback(resp);
         });
 
+    });
+
+    socket.on('obtenerViajeOperario', (operario, callback) => {
+        if (!operario._id) {
+            callback({ error: true, server: 'el id es requerido' });
+        }
+        let viajeOperario = asignaciones.obtenerViajeOperario(operario._id);
+        callback(viajeOperario);
+    });
+
+
+    socket.on('dispositivoConectado', (dispositivo, callback) => {
+
+        if (!dispositivo._id) {
+            return callback({ ok: false, server: 'el id es requerido' })
+        }
+
+        let dispositivosActuales = dispositivos.agregar(socket.id, dispositivo._id);
+        let nuevaData = database.actualizar(socket.id, dispositivo).then((resp) => {
+            console.log('base de datos dispositivo', resp);
+        });
+
+
+        socket.broadcast.emit('listaDispositivos', dispositivosActuales); // este es ele que escucha el usuario de manera global
+        console.log('dispositivo conectado', dispositivo);
+
+        callback(dispositivosActuales);
+    });
+
+    socket.on('dispositivoMensajeTodos', data => {
+        let dispositivo = dispositivos.obtnerUno(socket.id);
+        let mensaje = {
+            dispositivo: dispositivo,
+            mensaje: data
+        }
+        socket.broadcast.emit('dispositivoMensajeTodos', mensaje); //mensaje global 
+    });
+
+    socket.on('dispositivoMensajePrivado', (data, callback) => {
+        let dispositivo = dispositivos.obtnerUno(socket.id);
+        let mensaje = {
+            dispositivo: dispositivo,
+            mensaje: data.mensaje,
+            para: data.para,
+            viaje: data.viaje
+        };
+
+        socket.broadcast.to(mensaje.para).emit('dispositivoMensajePrivado', mensaje);
+
+        callback({ ok: true, server: 'datos recibidos' });
+    });
+
+
+    socket.on('disconnect', () => {
+        console.log('dispositivo desconectado', socket.id);
+
+        let dispositivoBorrado = dispositivos.borrar(socket.id);
+
+        socket.broadcast.emit('dispositivoDesconectado', { error: false, server: 'dispositivo con el id: ' + dispositivoBorrado + ' salio!!' })
+        socket.broadcast.emit('listaDispositivos', dispositivos.obtenerTodos());
     });
 
 

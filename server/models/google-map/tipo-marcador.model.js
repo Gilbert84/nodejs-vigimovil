@@ -11,7 +11,9 @@ var tipoMarcadorSchema = new Schema({
         unique: true
     },
     img: { type: String, required: false },
-    usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' }
+    usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}
 }, { collection: 'TipoMarcadores' });
 
 tipoMarcadorSchema.plugin(uniqueValidator, { message: 'el {PATH} debe de ser único' });

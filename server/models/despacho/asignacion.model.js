@@ -6,6 +6,8 @@ var uniqueValidator = require('mongoose-unique-validator');
 var asignacionSchema = new Schema({
     fechaHora: { type: Date, required: [true, 'campo requerido'] },
     disponible: { type: Boolean, required: [true, 'campo requerido'] },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}, 
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var uniqueValidator = require('mongoose-unique-validator');
 
 
 var vehiculoSchema = new Schema({
@@ -9,7 +10,10 @@ var vehiculoSchema = new Schema({
     modelo: { type: String, required: [true, 'El nombre de usuario es necesario'] },
     categoria: { type: String, required: [true, 'Campo requerido'] },
     capacidad: { type: String, required: [true, 'Campo requerido'] },
+    disponible: { type: Boolean, required: [false, 'Campo requerido'] ,default: true},
     img: { type: String, required: false },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}, 
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true ,
@@ -23,9 +27,12 @@ var vehiculoSchema = new Schema({
     dispositivo:{
         type: Schema.Types.ObjectId,
         ref:'Dispositivo',
-        required: [true, 'El id del dispositivo es un campo obligatorio']
+        required: [true, 'El id del dispositivo es un campo obligatorio'],
+        unique: true
     }
 });
+
+vehiculoSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 
 
 module.exports = mongoose.model('Vehiculo', vehiculoSchema );

@@ -12,6 +12,8 @@ var rutaSchema = new Schema({
     visible:{ type: Boolean, required: true },
     distancia:{ type: Object , required: true},
     duraccion:{ type: Object , required: false},
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}, 
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true ,

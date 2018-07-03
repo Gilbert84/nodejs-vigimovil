@@ -10,6 +10,8 @@ var operarioSchema = new Schema({
     disponible: { type: Boolean, required: [true, 'El campo es obligatorio'], default: false },
     img: { type: String, required: false },
     usuario: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}, 
     empresa: {
         type: Schema.Types.ObjectId,
         ref: 'Empresa',

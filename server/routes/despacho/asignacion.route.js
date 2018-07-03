@@ -79,7 +79,10 @@ app.get('/:id', (req, res) => {
                 });
             }
 
-            Asignacion.populate(asignacion, { path: 'operario.empresa vehiculo.empresa', select: 'nombre img', model: 'Empresa' },
+            Asignacion.populate(asignacion, [
+                    { path: 'operario.empresa vehiculo.empresa vehiculo.dispositivo', select: 'nombre img', model: 'Empresa' },
+                    { path: 'vehiculo.dispositivo', select: 'socket_id', model: 'Dispositivo' }
+                ],
                 (error, tipo) => {
                     res.status(200).json({
                         ok: true,
@@ -124,6 +127,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         asignacion.usuario = req.usuario._id;
         asignacion.operario = body.operario;
         asignacion.vehiculo = body.vehiculo;
+        asignacion.fechaActualizado = new Date();
 
 
         asignacion.save((err, asignacionGuardada) => {

@@ -8,6 +8,7 @@ var mdAutenticacion = require('../middlewares/autenticacion');
 var app = express();
 
 var Vehiculo = require('../models/vehiculo.model');
+var Dispositivo = require('../models/dispositivo.model');
 
 
 // ==========================================
@@ -117,6 +118,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         vehiculo.nombre = body.nombre;
         vehiculo.usuario = req.usuario._id;
         vehiculo.empresa = body.empresa;
+        vehiculo.fechaActualizado = new Date();
 
         vehiculo.save((err, vehiculoGuardado) => {
 
@@ -127,6 +129,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                     errors: err
                 });
             }
+
 
             res.status(200).json({
                 ok: true,
@@ -158,17 +161,20 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         dispositivo: body.dispositivo,
         modelo:body.modelo
     });
+    
 
     vehiculo.save((err, vehiculoGuardado) => {
 
         if (err) {
-            console.log('error',err);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear vehiculo',
                 errors: err
             });
         }
+
+
+        actualizarDispositivo(body.dispositivo);
 
         res.status(201).json({
             ok: true,
@@ -215,6 +221,45 @@ app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 });
+
+
+function actualizarDispositivo(id) {
+    Dispositivo.findById(id, (err, dispositivoEncontrado) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar vehiculo',
+                errors: err
+            });
+        }
+
+        if (!dispositivoEncontrado) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'El dispositivo con el id ' + id + ' no existe',
+                errors: { message: 'No existe un dispositivo con ese ID' }
+            });
+        }
+
+        dispositivoEncontrado.disponible = false;
+
+        dispositivoEncontrado.save((err, dispositivoActualizado) => {
+
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Error al actualizar dispositivo',
+                    errors: err
+                });
+            }
+            
+            console.log('dispositivo actualizado la disponibilidad',dispositivoActualizado);
+
+        });
+
+    }); 
+}
 
 
 module.exports = app;

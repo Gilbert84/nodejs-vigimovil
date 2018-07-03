@@ -21,7 +21,7 @@ app.get('/', (req, res, next) => {
     Viaje.find({})
         .skip(desde)
         .limit(5)
-        .populate('asigancion')
+        .populate('asignacion')
         .populate('ruta')
         .exec(
             (err, viajes) => {
@@ -35,22 +35,21 @@ app.get('/', (req, res, next) => {
                 }
 
 
-                Viaje.populate(viajes,
-                    [
-                        {path:'asigancion.operario',select: 'nombre identificacion',model:'Operario'},
-                        {path:'asigancion.vehiculo',select: 'placa interno',model:'Vehiculo'}
+                Viaje.populate(viajes, [
+                        { path: 'asigancion.operario', select: 'nombre identificacion', model: 'Operario' },
+                        { path: 'asigancion.vehiculo', select: 'placa interno', model: 'Vehiculo' },
                     ],
-                    (error,viajes)=>{
+                    (error, viajes) => {
                         Viaje.count({}, (err, conteo) => {
                             res.status(200).json({
                                 ok: true,
                                 viajes: viajes,
                                 total: conteo
                             });
-        
+
                         });
-                });
-                
+                    });
+
 
             });
 });
@@ -63,7 +62,7 @@ app.get('/:id', (req, res) => {
     var id = req.params.id;
 
     Viaje.findById(id)
-        .populate('asigancion')
+        .populate('asignacion')
         .populate('ruta')
         .exec((err, viaje) => {
 
@@ -83,14 +82,19 @@ app.get('/:id', (req, res) => {
                 });
             }
 
-            Viaje.populate(viaje,
-                {path:'asigancion.operario',select: 'nombre identificacion',model:'Operario'},
-                (error,tipo)=>{
+            Viaje.populate(viaje, [
+                    { path: 'asignacion.operario', select: 'nombre identificacion', model: 'Operario' },
+                    { path: 'asignacion.vehiculo', select: 'placa interno', model: 'Vehiculo' },
+                    { path: 'ruta.origen', model: 'Marcador' },
+                    { path: 'ruta.destino', model: 'Marcador' }
+                ],
+                (error, tipo) => {
+                    console.log('tipo', tipo);
                     res.status(200).json({
                         ok: true,
                         viaje: viaje
                     });
-            });
+                });
 
         })
 
@@ -127,6 +131,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         viaje.fechaHoraFin = new Date();
         viaje.usuario = req.usuario._id;
         viaje.ruta = body.ruta;
+        viaje.fechaActualizado = new Date();
 
 
         viaje.save((err, viajeGuardado) => {
@@ -138,6 +143,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
                     errors: err
                 });
             }
+
 
             res.status(200).json({
                 ok: true,
@@ -171,7 +177,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     viaje.save((err, viajeGuardado) => {
 
         if (err) {
-            console.log('error',err);
+            console.log('error', err);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear viaje',

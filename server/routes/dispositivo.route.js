@@ -12,8 +12,8 @@ var Dispositivo = require('../models/dispositivo.model');
 // ==========================================
 app.get('/', (req, res, next) => {
 
-   var desde = req.query.desde || 0;
-   desde = Number(desde);
+    var desde = req.query.desde || 0;
+    desde = Number(desde);
 
 
     Dispositivo.find({})
@@ -21,7 +21,7 @@ app.get('/', (req, res, next) => {
         .limit(5)
         .exec(
             (err, dispositivos) => {
-    
+
                 if (err) {
                     return res.status(500).json({
                         ok: false,
@@ -29,15 +29,15 @@ app.get('/', (req, res, next) => {
                         errors: err
                     });
                 }
-    
+
                 Dispositivo.count({}, (err, conteo) => {
-    
+
                     res.status(200).json({
                         ok: true,
                         dispositivos: dispositivos,
                         total: conteo
                     });
-    
+
                 })
             });
 });
@@ -112,6 +112,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
         dispositivo.nombre = body.nombre;
         dispositivo.activo = body.activo;
+        dispositivo.fechaActualizado = new Date();
 
         dispositivo.save((err, dispositivoGuardado) => {
 

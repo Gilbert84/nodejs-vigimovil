@@ -106,6 +106,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
         role.nombre = body.nombre;
         role.usuario = req.usuario._id;
+        role.fechaActualizado = new Date();
 
         role.save((err, roleGuardado) => {
 
