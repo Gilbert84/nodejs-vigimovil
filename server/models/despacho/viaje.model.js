@@ -3,15 +3,15 @@ var Schema = mongoose.Schema;
 
 
 var viajeSchema = new Schema({
-    fechaHoraInicio: { type: Date, required: [true, 'El nombre es necesario'] },
+    fechaHoraInicio: { type: Date, required: [false, 'El nombre es necesario'] },
     fechaHoraFin: { type: Date, required: [false, 'El nombre es necesario'] },
     pasajeros:{ type: Object, required: false},
-    estado: { type: Object, required: true, default: { mensaje:'disponible' , codigo: 1 } },
+    estado: { type: Object, required: false, default: { mensaje:'disponible' , codigo: 1 } },
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true 
     },
-    asigancion:{
+    asignacion:{
         type: Schema.Types.ObjectId,
         ref: 'Asignacion',
         required: [true, 'El id de la asignacion es requerido']

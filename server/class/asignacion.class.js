@@ -48,6 +48,13 @@ class Asignaciones {
 
     }
 
+    obtenerViajeOperario(_id) {
+        let viaje = this.asignaciones.filter(viaje => {
+            return viaje.operario._id === _id;
+        })[0];
+        return viaje;
+    }
+
     filtrar() {
         return this.asignaciones = this.asignaciones.filter(asignacion => {
             return asignacion.disponible != false;

@@ -1,11 +1,11 @@
 var { io } = require('../server');
-var { ControlFlota } =require('../class/control-flota');
+var { ControlFlota } = require('../class/control-flota');
 var { Usuarios } = require('../class/usuarios');
 var { Dispositivos } = require('../class/dispositivo.class');
 var Dispositivo = require('../models/dispositivo.model');
 
 
-let controlFlota= new ControlFlota();
+let controlFlota = new ControlFlota();
 
 
 
@@ -48,20 +48,21 @@ io.on('connection', (socket) => {
     });
 
     //dispositivo previamente registrado y en linea
-    socket.on('onlineDispositivo',( dispositivo , callback )=>{
-        console.log('en linea',dispositivo);
+    socket.on('onlineDispositivo', (dispositivo, callback) => {
+        console.log('en linea', dispositivo);
 
     });
 
-    socket.on('registroDispositivo', (dispositivo, callback ) => {
-        
+    socket.on('registroDispositivo', (dispositivo, callback) => {
+        console.log('dispositivo nuevo', dispositivo);
+        dispositivo.socket_id = socket.id;
         dispositivos.crearDispositivo(dispositivo)
-                    .then((resp)=>{        
-                        callback(resp);//devuelvo el callback al dispositivo
-                    })
-                    .catch((err)=>{
-                        callback(err);//devuelvo el callback al dispositivo
-                    });
+            .then((resp) => {
+                callback(resp); //devuelvo el callback al dispositivo
+            })
+            .catch((err) => {
+                callback(err); //devuelvo el callback al dispositivo
+            });
 
         //dispositivos.validarData(socket, data); // validamos la info
         //socket.broadcast.to(data.ruta).emit('listaDispositivo', dispositivos.getDispositivoPorRuta(data.ruta));
@@ -94,22 +95,22 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.on('siguienteTiket',(data, callback )=>{
+    socket.on('siguienteTiket', (data, callback) => {
         let siguiente = controlFlota.siguienteDespacho();
         console.log(siguiente);
         callback(siguiente);
     });
 
-    socket.on('atenderDespacho',(data,callback)=>{
+    socket.on('atenderDespacho', (data, callback) => {
 
-        if(!data.escritorio){
+        if (!data.escritorio) {
             return callback({
-                err:true,
-                mensaje:'el escritorio es necesario'
+                err: true,
+                mensaje: 'el escritorio es necesario'
             });
         }
 
-        let atenderDespacho= controlFlota.atenderDespacho(data.escritorio);
+        let atenderDespacho = controlFlota.atenderDespacho(data.escritorio);
 
         callback(atenderDespacho);
 
@@ -117,24 +118,24 @@ io.on('connection', (socket) => {
     });
 
 
-    socket.emit('estadoActual',{ actual: controlFlota.obtenerUltimoDespacho() });
+    socket.emit('estadoActual', { actual: controlFlota.obtenerUltimoDespacho() });
 
 
     //ejecutamos limpieza de clientes y dispositivos
     socket.on('disconnect', () => {
 
         var personaBorrada = usuarios.borrarPersona(socket.id);
-        var dispositivoBorrado = dispositivos.borrarDispositivo(socket.id);
+        //var dispositivoBorrado = dispositivos.borrarDispositivo(socket.id);
 
         if (personaBorrada != undefined) {
             socket.broadcast.to(personaBorrada.sala).emit('crearMensaje', crearMensaje('Administrador', `${ personaBorrada.nombre } salió`));
             socket.broadcast.to(personaBorrada.sala).emit('listaPersona', usuarios.getPersonasPorSala(personaBorrada.sala));
-        } else if (dispositivoBorrado != undefined) {
-            socket.broadcast.to(dispositivoBorrado.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ dispositivoBorrado.nombre } salió`));
-            socket.broadcast.to(dispositivoBorrado.ruta).emit('listaPersona', usuarios.getPersonasPorSala(dispositivoBorrado.ruta));
-        }
+        } //else if (dispositivoBorrado != undefined) {
+        //socket.broadcast.to(dispositivoBorrado.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ dispositivoBorrado.nombre } salió`));
+        //socket.broadcast.to(dispositivoBorrado.ruta).emit('listaPersona', usuarios.getPersonasPorSala(dispositivoBorrado.ruta));
+        //}
 
-        socket.broadcast.emit('crearMensaje',{server:'Administrador',mensaje:`${'salio'+ socket.id}`});
+        socket.broadcast.emit('crearMensaje', { server: 'Administrador', mensaje: `${'salio'+ socket.id}` });
 
         //console.log('salio id: ', socket.id);
 
