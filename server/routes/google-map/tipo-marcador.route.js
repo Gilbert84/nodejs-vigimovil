@@ -106,6 +106,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
         tipoMarcador.nombre = body.nombre;
         tipoMarcador.usuario = req.usuario._id;
+        tipoMarcador.fechaActualizado = new Date();
 
         tipoMarcador.save((err, tipoMarcadorGuardado) => {
 

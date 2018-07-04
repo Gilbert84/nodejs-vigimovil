@@ -7,6 +7,8 @@ var viajeSchema = new Schema({
     fechaHoraFin: { type: Date, required: [false, 'El nombre es necesario'] },
     pasajeros:{ type: Object, required: false},
     estado: { type: Object, required: false, default: { mensaje:'disponible' , codigo: 1 } },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false}, 
     usuario: { 
         type: Schema.Types.ObjectId, 
         ref: 'Usuario', required: true 

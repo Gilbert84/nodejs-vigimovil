@@ -1,10 +1,12 @@
 var { io } = require('../server');
 var { Asignaciones } = require('../class/asignacion.class');
 var { Dispositivos, Database } = require('../class/dispositivo.class');
+var { DatabaseViaje } = require('../class/database-viaje.class');
 
 const asignaciones = new Asignaciones();
 const dispositivos = new Dispositivos();
 const database = new Database();
+const databaseViaje = new DatabaseViaje();
 
 io.on('connection', (socket) => {
 
@@ -32,6 +34,15 @@ io.on('connection', (socket) => {
         callback(viajeOperario);
     });
 
+    socket.on('terminarViajeOperario', (viaje, callback) => {
+        if (!viaje._id) {
+            callback({ error: true, server: 'el id es requerido' });
+        }
+        databaseViaje.actualizar(viaje).then((resp) => {
+            callback(resp);
+        });
+    });
+
 
     socket.on('dispositivoConectado', (dispositivo, callback) => {
 
@@ -41,12 +52,11 @@ io.on('connection', (socket) => {
 
         let dispositivosActuales = dispositivos.agregar(socket.id, dispositivo._id);
         let nuevaData = database.actualizar(socket.id, dispositivo).then((resp) => {
-            console.log('base de datos dispositivo', resp);
+
         });
 
 
         socket.broadcast.emit('listaDispositivos', dispositivosActuales); // este es ele que escucha el usuario de manera global
-        console.log('dispositivo conectado', dispositivo);
 
         callback(dispositivosActuales);
     });

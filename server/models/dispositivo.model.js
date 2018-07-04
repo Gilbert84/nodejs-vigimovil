@@ -22,6 +22,7 @@ var dispositivoSchema = new Schema({
     iccid: { type: String, required: false },
     img: { type: String, required: false },
     activo: { type: Boolean, required: false },
+    disponible: { type: Boolean, required: false },
     simcard1: { type: String, required: false },
     simcard2: { type: String, required: false },
     categoria: { type: String, required: true, default: 'TABLET', enum: categoriasValidas },

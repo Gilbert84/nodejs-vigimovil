@@ -129,6 +129,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         ruta.origen = body.origen;
         ruta.destino = body.destino;
         ruta.visible = body.visible;
+        ruta.fechaActualizado = new Date();
 
         ruta.save((err, rutaGuardada) => {
 

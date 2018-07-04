@@ -127,6 +127,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         asignacion.usuario = req.usuario._id;
         asignacion.operario = body.operario;
         asignacion.vehiculo = body.vehiculo;
+        asignacion.fechaActualizado = new Date();
 
 
         asignacion.save((err, asignacionGuardada) => {

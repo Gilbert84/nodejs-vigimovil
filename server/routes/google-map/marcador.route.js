@@ -106,6 +106,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         marcador.tipo = body.tipo._id;
         marcador.arrastable = body.arrastable;
         marcador.usuario = req.usuario._id;
+        marcador.fechaActualizado = new Date();
 
         marcador.save((err, marcadorGuardado) => {
 

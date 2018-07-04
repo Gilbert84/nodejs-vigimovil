@@ -9,7 +9,9 @@ var nacionaliadSchema = new Schema({
         required: [true, 'El nombre es necesario'],
         unique: true
     },
-    usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' }
+    usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+    fechaCreado: { type: Date ,required:false , default: new Date()}, 
+    fechaActualizado: { type: Date ,required:false} 
 }, { collection: 'Nacionalidad' });
 
 nacionaliadSchema.plugin(uniqueValidator, { message: 'el {PATH} debe de ser único' });

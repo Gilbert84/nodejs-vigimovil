@@ -189,6 +189,7 @@ class Database {
                                 mensaje: 'Error cargando dispositivos',
                                 errors: err
                             });
+                            return;
                         }
 
                         this.dispositivos = dispositivos;
@@ -213,14 +214,16 @@ class Database {
                         mensaje: 'Error al buscar dispositivo',
                         errors: err
                     });
+                    return;
                 }
 
                 if (!dispositivo) {
                     resolve({
                         ok: false,
-                        mensaje: 'El dispositivo con el id ' + id + ' no existe',
+                        mensaje: 'El dispositivo con el id ' + data._id + ' no existe',
                         errors: { message: 'No existe un dispositivo con ese ID' }
                     });
+                    return;
                 }
 
 

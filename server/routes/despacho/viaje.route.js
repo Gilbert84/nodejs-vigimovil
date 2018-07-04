@@ -8,6 +8,7 @@ var mdAutenticacion = require('../../middlewares/autenticacion');
 var app = express();
 
 var Viaje = require('../../models/despacho/viaje.model');
+var Asignacion = require('../../models/despacho/asignacion.model');
 
 
 // ==========================================
@@ -131,6 +132,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         viaje.fechaHoraFin = new Date();
         viaje.usuario = req.usuario._id;
         viaje.ruta = body.ruta;
+        viaje.fechaActualizado = new Date();
 
 
         viaje.save((err, viajeGuardado) => {
@@ -184,6 +186,8 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
             });
         }
 
+        actualizarAsignacion(body.asignacion);
+
         res.status(201).json({
             ok: true,
             viaje: viajeGuardado
@@ -229,6 +233,45 @@ app.delete('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
 });
+
+
+function actualizarAsignacion(id) {
+    Asignacion.findById(id, (err, asignacionEncontrada) => {
+
+        if (err) {
+            return res.status(500).json({
+                ok: false,
+                mensaje: 'Error al buscar vehiculo',
+                errors: err
+            });
+        }
+
+        if (!asignacionEncontrada) {
+            return res.status(400).json({
+                ok: false,
+                mensaje: 'la asignacion con el id ' + id + ' no existe',
+                errors: { message: 'No existe un asignacion con ese ID' }
+            });
+        }
+
+        asignacionEncontrada.disponible = false;
+
+        asignacionEncontrada.save((err, asignacionActualizada) => {
+
+            if (err) {
+                return res.status(400).json({
+                    ok: false,
+                    mensaje: 'Error al actualizar dispositivo',
+                    errors: err
+                });
+            }
+
+            console.log('asignacionActualizada la disponibilidad', asignacionActualizada);
+
+        });
+
+    });
+}
 
 
 module.exports = app;

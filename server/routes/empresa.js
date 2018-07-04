@@ -107,6 +107,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
         empresa.nombre = body.nombre;
         empresa.usuario = req.usuario._id;
+        empresa.fechaActualizado = new Date();
 
         empresa.save((err, empresaGuardado) => {
 

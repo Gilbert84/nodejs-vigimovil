@@ -172,6 +172,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
         operario.password = bcrypt.hashSync(body.password, 10);
         operario.usuario = req.usuario._id;
         operario.empresa = body.empresa;
+        operario.fechaActualizado = new Date();
 
         operario.save((err, operarioGuardado) => {
 
