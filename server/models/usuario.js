@@ -24,7 +24,7 @@ Técnico informático de soporte técnico
 */
 
 var rolesValidos = {
-    values: ['USER_ROLE', 'OPERADOR_ROLE','COORDINADOR_ROLE' ,'ADMIN_ROLE' , 'SUPER_ROLE'],
+    values: ['USER_ROLE', 'OPERADOR_ROLE', 'COORDINADOR_ROLE', 'ADMIN_ROLE', 'SUPER_ROLE'],
     message: '{VALUE} no es un rol permitido'
 };
 
@@ -37,10 +37,18 @@ var usuarioSchema = new Schema({
     img: { type: String, required: false },
     role: { type: String, required: true, default: 'USER_ROLE', enum: rolesValidos },
     google: { type: Boolean, required: true, default: false },
-    fechaCreado: { type: Date ,required:false , default: new Date()}, 
-    fechaActualizado: { type: Date ,required:false}, 
+    fechaCreado: { type: Date, required: false, default: new Date() },
+    fechaActualizado: { type: Date, required: false },
 });
 
-//usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
+// metodo para modificar la impresion de devolucion cuando llaman el servicio por JSON
+// usuarioSchema.methods.toJSON = function () {
+//     let user = this;
+//     let userObject = user.toObject();
+//     delete userObject.password;
+//     return userObject;
+// };
+
+usuarioSchema.plugin(uniqueValidator, { message: '{PATH} debe de ser único' });
 
 module.exports = mongoose.model('Usuario', usuarioSchema);

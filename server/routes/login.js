@@ -158,7 +158,7 @@ app.post('/', (req, res) => {
         if (!usuarioDB) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Credenciales incorrectas - email',
+                mensaje: 'Credenciales incorrectas', // email
                 errors: err
             });
         }
@@ -166,7 +166,7 @@ app.post('/', (req, res) => {
         if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
             return res.status(400).json({
                 ok: false,
-                mensaje: 'Credenciales incorrectas - password',
+                mensaje: 'Credenciales incorrectas', //password
                 errors: err
             });
         }
@@ -223,13 +223,13 @@ function obtenerMenu(ROLE) {
             titulo: 'Mantenimientos',
             icono: 'mdi mdi-folder-lock-open',
             submenu: [
-                {   titulo: 'Usuarios', url: '/usuarios' },
-                {   titulo: 'Empresas', url: '/empresas' },
-                {   titulo: 'Operarios', url: '/operarios' },
-                {   titulo: 'Vehiculos', url: '/vehiculos' },
-                {   titulo: 'Dispositivos', url: '/dispositivos' },
-                {   titulo: 'Rutas', url: '/google-map' },
-                {   titulo: 'Despacho', url: '/despacho' }
+                { titulo: 'Usuarios', url: '/usuarios' },
+                { titulo: 'Empresas', url: '/empresas' },
+                { titulo: 'Operarios', url: '/operarios' },
+                { titulo: 'Vehiculos', url: '/vehiculos' },
+                { titulo: 'Dispositivos', url: '/dispositivos' },
+                { titulo: 'Rutas', url: '/google-map' },
+                { titulo: 'Despacho', url: '/despacho' }
             ]
         });
     }
