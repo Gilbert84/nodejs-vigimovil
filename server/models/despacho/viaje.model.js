@@ -12,6 +12,7 @@ var viajeSchema = new Schema({
     horaSalidaAsignada: { type: Date, required: false },
     horaLlegadaAsignada: { type: Date, required: false },
     enviadoAreaMetropol: { type: Boolean, required: false, default: false },
+    archivo: { type: String, required: false },
     usuario: {
         type: Schema.Types.ObjectId,
         ref: 'Usuario',

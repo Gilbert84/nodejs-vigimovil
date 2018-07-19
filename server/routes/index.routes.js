@@ -16,6 +16,7 @@ app.use('/operario', require('./operario'));
 app.use('/login', require('./login'));
 app.use('/busqueda', require('./busqueda'));
 app.use('/upload', require('./upload'));
+app.use('/download', require('./download'));
 app.use('/img', require('./imagenes'));
 app.use('/', require('./app'));
 

@@ -9,6 +9,11 @@ var empresaSchema = new Schema({
         required: [true, 'El nombre es necesario'],
         unique: true
     },
+    nit: { 
+        type: String, 
+        required: [false, 'El nit es nesesario'],
+        unique: true
+    },
     img: { type: String, required: false },
     usuario: { type: Schema.Types.ObjectId, ref: 'Usuario' },
     fechaCreado: { type: Date ,required:false , default: new Date()}, 
