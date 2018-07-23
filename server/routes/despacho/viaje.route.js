@@ -90,7 +90,7 @@ app.get('/:id', (req, res) => {
                     { path: 'ruta.destino', model: 'Marcador' }
                 ],
                 (error, tipo) => {
-                    console.log('tipo', tipo);
+                    //console.log('tipo', tipo);
                     res.status(200).json({
                         ok: true,
                         viaje: viaje
@@ -176,13 +176,14 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         pasajeros: body.pasajeros,
         estado: body.estado,
         horaSalidaAsignada: body.horaSalidaAsignada,
-        horaLlegadaAsignada: body.horaLlegadaAsignada
+        horaLlegadaAsignada: body.horaLlegadaAsignada,
+        fechaActualizado: null
     });
 
     viaje.save((err, viajeGuardado) => {
 
         if (err) {
-            console.log('error', err);
+            //console.log('error', err);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear viaje',
@@ -269,9 +270,6 @@ function actualizarAsignacion(id) {
                     errors: err
                 });
             }
-
-            console.log('asignacionActualizada la disponibilidad', asignacionActualizada);
-
         });
 
     });

@@ -170,7 +170,6 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     asignacion.save((err, asignacionGuardada) => {
 
         if (err) {
-            console.log('error', err);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear asignacion',

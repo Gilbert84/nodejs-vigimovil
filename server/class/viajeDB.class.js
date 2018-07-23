@@ -88,7 +88,6 @@ class ViajeDB {
     // ==========================================
     actualizarEstado(viaje) {
 
-        console.log('DB',viaje);
         return new Promise((resolve, reject) => {
             Viaje.findById(viaje._id, (err, viajeEncontrado) => {
 
@@ -126,7 +125,7 @@ class ViajeDB {
                         ok: true,
                         mensaje: 'Estado viaje actualizado',
                     });
-          
+
                 });
 
             });

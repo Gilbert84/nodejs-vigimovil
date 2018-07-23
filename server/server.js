@@ -23,8 +23,8 @@ app.use(function(req, res, next) {
 
 // Body Parser
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 
 // configuracion global de rutas
@@ -46,7 +46,7 @@ var server = http.createServer(app);
 
 // IO = esta es la comunicacion del backend
 module.exports.io = socketIO(server);
-require('./sockets/index.socket');
+require('./sockets/routes.socket');
 
 
 // Escuchar peticiones

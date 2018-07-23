@@ -2,14 +2,14 @@ const fs = require('fs');
 
 class Despacho {
 
-    constructor(numero, escritorio) {
+    constructor(numero, ruta) {
         this.numero = numero;
-        this.escritorio = escritorio;
+        this.ruta = ruta;
     }
 
 }
 
-class ControlFlota {
+class ControlDespacho {
 
     constructor() {
         this.ultimo = 0;
@@ -19,7 +19,7 @@ class ControlFlota {
 
         let data = require('../data/control-flota.data.json');
 
-        //console.log(data);
+        console.log(data);
 
         if (data.hoy === this.hoy) {
             //continuamos con el trabajo
@@ -37,7 +37,6 @@ class ControlFlota {
         this.despachos = [];
         this.ultimosNdespachos = [];
         this.grabarArchivo();
-        //console.log('reinciando tareas');
     }
 
 
@@ -54,7 +53,7 @@ class ControlFlota {
         return `Despacho ${ this.ultimo }`;
     }
 
-    atenderDespacho(escritorio) {
+    atenderDespacho(ruta) {
 
         if (this.despachos.length === 0) {
             return {
@@ -95,5 +94,5 @@ class ControlFlota {
 
 
 module.exports = {
-    ControlFlota
+    ControlDespacho
 }

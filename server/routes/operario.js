@@ -17,11 +17,11 @@ app.post('/login', (req, res) => {
 
 
     var body = req.body;
-    console.log(body);
+    //console.log(body);
 
     Operario.findOne({ alias: body.alias }, (err, operarioDB) => {
 
-        console.log(operarioDB);
+        //console.log(operarioDB);
 
         if (err) {
             return res.status(500).json({
