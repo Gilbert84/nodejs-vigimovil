@@ -85,7 +85,7 @@ app.get('/:id', (req, res) => {
 // ==========================================
 app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
-    console.log(req.params);
+    //console.log(req.params);
 
     var id = req.params.id;
     var body = req.body;

@@ -19,7 +19,7 @@ class ControlDespacho {
 
         let data = require('../data/control-flota.data.json');
 
-        console.log(data);
+        //console.log(data);
 
         if (data.hoy === this.hoy) {
             //continuamos con el trabajo

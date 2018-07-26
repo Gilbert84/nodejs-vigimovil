@@ -62,13 +62,12 @@ io.on('connection', (socket) => {
         }
 
         let dispositivosActuales = dispositivos.agregar(socket.id, dispositivo._id);
+        socket.broadcast.emit('listaActualDispositivos', dispositivos.obtenerTodos());
         let nuevaData = database.actualizar(socket.id, dispositivo).then((resp) => {
 
         });
 
-
         socket.broadcast.emit('listaDispositivos', dispositivosActuales); // este es ele que escucha el usuario de manera global
-
         callback(dispositivosActuales);
     });
 
@@ -82,17 +81,15 @@ io.on('connection', (socket) => {
     });
 
     socket.on('asignarNuevoViaje', (data, callback) => {
-        let dispositivo = dispositivos.obtnerUno(socket.id);
+        let dispositivoObtenido = dispositivos.obtnerUno(socket.id);
         let mensaje = {
-            dispositivo: dispositivo,
-            mensaje: data.mensaje,
-            para: data.para,
+            ok:true,
+            de: socket.id,
             viaje: data.viaje
         };
 
         if (data.viaje.estado.codigo === 0) {
             despacho = controlDespacho.siguienteDespacho();
-            console.log('siguiente despacho', despacho);
         }
         socket.broadcast.to(mensaje.para).emit('asignarNuevoViaje', mensaje);
         callback({
@@ -103,12 +100,13 @@ io.on('connection', (socket) => {
     });
 
     socket.on('confirmacionAsignacion', (data, callback) => {
-        let usuario = usuarios.obtenerPersona(socket.id);
+        let usuarioObtenido = usuarios.obtenerPersona(socket.id);
         let confirmacionAsignacion = {
-            server: data,
-            para: data.para,
+            ok:true,
+            de:socket.id,
+            mensaje: data.mensaje
         };
-        socket.broadcast.emit('confirmacionAsignacion', confirmacionAsignacion);
+        socket.broadcast.to(data.para).emit('confirmacionAsignacion', confirmacionAsignacion);
         callback({
             ok: true,
             server: 'datos sincronizados'
@@ -234,24 +232,18 @@ io.on('connection', (socket) => {
     socket.on('disconnect', function() {
 
         var personaBorrada = usuarios.borrarPersona(socket.id);
-        // //var dispositivoBorrado = dispositivos.borrarDispositivo(socket.id);
+        var dispositivoBorrado = dispositivos.borrarDispositivo(socket.id);
 
         if (personaBorrada !== undefined) {
             socket.broadcast.emit('usuarioDesconectado', crearMensaje('Administrador', socket.id + 'salió'));
             socket.broadcast.emit('listaActualUsuarios', usuarios.obtenerPersonas());
             //socket.broadcast.to(personaBorrada.sala).emit('usuarioDesconectado', crearMensaje('Administrador', 'personaBorrada.nombre ' + 'salió'));
             //socket.broadcast.to(personaBorrada.sala).emit('listaActualUsuarios', usuarios.getPersonasPorSala(personaBorrada.sala));
-        } //else if (dispositivoBorrado != undefined) {
-        //socket.broadcast.to(dispositivoBorrado.ruta).emit('crearMensaje', crearMensaje('Administrador', `${ dispositivoBorrado.nombre } salió`));
-        //socket.broadcast.to(dispositivoBorrado.ruta).emit('listaPersona', usuarios.getPersonasPorSala(dispositivoBorrado.ruta));
-        //}
-
-        // var dispositivoBorrado = dispositivos.borrar(socket.id);
-
-        // socket.broadcast.emit('dispositivoDesconectado', { error: false, server: 'dispositivo con el id: ' + dispositivoBorrado + ' salio!!' });
-        // socket.broadcast.emit('listaDispositivos', dispositivos.obtenerTodos());
-
-        // socket.broadcast.emit('crearMensaje', { server: 'Administrador', mensaje: 'salio' + socket.id });
+        } 
+        else if (dispositivoBorrado !== undefined) {
+            socket.broadcast.emit('dispositivoDesconectado', crearMensaje('Administrador', socket.id + 'salió'));
+            socket.broadcast.emit('listaActualDispositivos', dispositivos.obtenerTodos());
+        }
 
     });
 

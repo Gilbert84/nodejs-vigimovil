@@ -177,7 +177,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
     ruta.save((err, rutaGuardada) => {
 
         if (err) {
-            console.log('error',err);
+            //console.log('error',err);
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Error al crear ruta',

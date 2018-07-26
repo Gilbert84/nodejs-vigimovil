@@ -9,7 +9,7 @@ var path = require('path');
 
 // Inicializar variables
 var app = express();
-//var publicPath = path.resolve(__dirname, '../public');
+var publicPath = path.resolve(__dirname, '../public');
 
 
 // CORS  mas informacion en: https://enable-cors.org/server_expressjs.html , https://github.com/expressjs/cors 
@@ -40,7 +40,7 @@ mongoose.connection.openUri(process.env.urlDataBase, (err, res) => {
 
 // app.use(express.static(__dirname + '/'))
 // app.use('/uploads', serveIndex(__dirname + '/uploads'));
-// app.use(express.static(publicPath));
+app.use(express.static(publicPath));
 
 var server = http.createServer(app);
 
