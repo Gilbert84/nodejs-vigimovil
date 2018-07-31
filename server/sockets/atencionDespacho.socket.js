@@ -10,6 +10,8 @@ const viajeDB = new ViajeDB();
 
 io.on('connection', (socket) => {
 
+    console.log('segunda conexion');
+
     socket.on('actualizarAsignaciones', (data, callback) => {
 
         asignaciones.obtener().then((asignacionesActuales) => {
@@ -84,7 +86,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('actualizarViajeEstado', (viaje, callback) => {
-        viajeDB.actualizarEstado(viaje).then( (resp) =>{
+        viajeDB.actualizarEstado(viaje).then((resp) => {
             callback(resp);
         });
     });

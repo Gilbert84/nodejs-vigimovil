@@ -30,11 +30,7 @@ class Dispositivos {
 
     // id hace referencia al id unico del socket
     // _id hace referencia al id unico de la base de datos
-    agregar(id, _id) {
-        let dispositivo = {
-            id: id,
-            _id: _id
-        };
+    agregar(dispositivo) {
         this.dispositivos.push(dispositivo);
         return this.dispositivos;
     }
@@ -202,11 +198,10 @@ class Database {
     // ==========================================
     // Actualizar Dispositivo
     // ==========================================
-    actualizar(socket_id, data) {
+    actualizar(dispositivo) {
 
         return new Promise((resolve, reject) => {
-            Dispositivo.findById(data._id, (err, dispositivo) => {
-
+            Dispositivo.findById(dispositivo._id, (err, dispositivoEncontrado) => {
 
                 if (err) {
                     resolve({
@@ -214,23 +209,22 @@ class Database {
                         mensaje: 'Error al buscar dispositivo',
                         errors: err
                     });
-                    return;
                 }
 
-                if (!dispositivo) {
+                if (!dispositivoEncontrado) {
                     resolve({
                         ok: false,
-                        mensaje: 'El dispositivo con el id ' + data._id + ' no existe',
+                        mensaje: 'El dispositivo con el id ' + dispositivoEncontrado._id + ' no existe',
                         errors: { message: 'No existe un dispositivo con ese ID' }
                     });
-                    return;
                 }
 
 
-                dispositivo.socket_id = socket_id;
-                dispositivo.fechaActualizado = new Date();
+                dispositivoEncontrado.socket_id = dispositivo.socket_id;
+                dispositivoEncontrado.geoposicion = dispositivo.geoposicion;
+                dispositivoEncontrado.fechaActualizado = new Date();
 
-                dispositivo.save((err, dispositivoGuardado) => {
+                dispositivoEncontrado.save((err, dispositivoGuardado) => {
 
                     if (err) {
                         resolve({
@@ -242,7 +236,7 @@ class Database {
 
                     resolve({
                         ok: true,
-                        dispositivo: dispositivoGuardado
+                        mensaje: 'dispositivo actualizado',
                     });
 
                 });

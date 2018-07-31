@@ -217,22 +217,67 @@ function obtenerMenu(ROLE) {
 
     //COORDINADOR_ROLE, DESPACHADOR_ROLE, OPERADOR_ROLE
 
-    if (ROLE === 'ADMIN_ROLE') {
-        //menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });//lo pone en la primera posicion del arreglo mientras que el push lo pone al final
-        menu.push({
-            titulo: 'Mantenimientos',
-            icono: 'mdi mdi-folder-lock-open',
-            submenu: [
-                {   titulo: 'Usuarios', url: '/usuarios' },
-                {   titulo: 'Empresas', url: '/empresas' },
-                {   titulo: 'Operarios', url: '/operarios' },
-                {   titulo: 'Vehiculos', url: '/vehiculos' },
-                {   titulo: 'Dispositivos', url: '/dispositivos' },
-                {   titulo: 'Rutas', url: '/google-map' },
-                {   titulo: 'Despacho', url: '/despacho' }
-            ]
-        });
+    switch (ROLE){
+        case 'ADMINISTRADOR':
+            menu.push({
+                titulo: 'Mantenimientos',
+                icono: 'mdi mdi-folder-lock-open',
+                submenu: [
+                    {   titulo: 'Usuarios', url: '/usuarios' },
+                    {   titulo: 'Empresas', url: '/empresas' },
+                    {   titulo: 'Operarios', url: '/operarios' },
+                    {   titulo: 'Vehiculos', url: '/vehiculos' },
+                    {   titulo: 'Dispositivos', url: '/dispositivos' },
+                    {   titulo: 'Rutas', url: '/google-map' },
+                    {   titulo: 'Despacho', url: '/despacho' }
+                ]
+            });        
+            break;
+        case 'COORDINADOR':
+            menu.push({
+                titulo: 'Asignaciones',
+                icono: 'mdi mdi-folder-lock-open',
+                submenu: [
+                    {   titulo: 'Asignaciones', url: '/asignaciones' } 
+                ]
+            }); 
+            break;
+        case 'DESPACHADOR':
+            menu.push({
+                titulo: 'Despachos',
+                icono: 'mdi mdi-folder-lock-open',
+                submenu: [
+                    {   titulo: 'Despachos', url: '/viajes' } 
+                ]
+            }); 
+            break;
+        case 'SUPERVISOR':
+            menu.push({
+                titulo: 'GESTION',
+                icono: 'mdi mdi-folder-lock-open',
+                submenu: [
+                    {   titulo: 'Rutas y puntos de control', url: '/google-map' }
+                ]
+            }); 
+            break;
     }
+
+    // if (ROLE === 'ADMIN_ROLE') {
+    //     //menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });//lo pone en la primera posicion del arreglo mientras que el push lo pone al final
+    //     menu.push({
+    //         titulo: 'Mantenimientos',
+    //         icono: 'mdi mdi-folder-lock-open',
+    //         submenu: [
+    //             {   titulo: 'Usuarios', url: '/usuarios' },
+    //             {   titulo: 'Empresas', url: '/empresas' },
+    //             {   titulo: 'Operarios', url: '/operarios' },
+    //             {   titulo: 'Vehiculos', url: '/vehiculos' },
+    //             {   titulo: 'Dispositivos', url: '/dispositivos' },
+    //             {   titulo: 'Rutas', url: '/google-map' },
+    //             {   titulo: 'Despacho', url: '/despacho' }
+    //         ]
+    //     });
+    // }
 
     // if (ROLE === 'ADMIN_ROLE') {
     //     //menu[1].submenu.unshift({ titulo: 'Usuarios', url: '/usuarios' });//lo pone en la primera posicion del arreglo mientras que el push lo pone al final

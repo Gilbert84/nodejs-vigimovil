@@ -106,6 +106,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 
 
         empresa.nombre = body.nombre;
+        empresa.nit = body.nit;
         empresa.usuario = req.usuario._id;
         empresa.fechaActualizado = new Date();
 
@@ -141,6 +142,7 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var empresa = new Empresa({
         nombre: body.nombre,
+        nit:body.nit,
         usuario: req.usuario._id
     });
 
@@ -156,7 +158,8 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
         res.status(201).json({
             ok: true,
-            empresa: empresaGuardado
+            empresa: empresaGuardado,
+            mensaje:'Empresa Creada'
         });
 
 

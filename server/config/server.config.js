@@ -4,9 +4,9 @@
 
 var defaultEnv = 'casa';
 //var defaultEnv = 'oficina';
-
+const port = 3001;
 process.env.NODE_ENV = process.env.NODE_ENV || defaultEnv;
-process.env.PORT = process.env.PORT || 3000;
+process.env.PORT = process.env.PORT || port;
 
 //=======================================
 //   configuracion base de datos

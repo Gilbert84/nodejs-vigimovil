@@ -150,7 +150,7 @@ app.put('/:id', mdAutenticacion.verificaToken, (req, res) => {
 app.post('/', mdAutenticacion.verificaToken, (req, res) => {
 
     var body = req.body;
-    console.log('vehiculo',req.body);
+    //console.log('vehiculo',req.body);
     var vehiculo = new Vehiculo({
         placa: body.placa,
         interno:body.interno,
@@ -254,7 +254,7 @@ function actualizarDispositivo(id) {
                 });
             }
             
-            console.log('dispositivo actualizado la disponibilidad',dispositivoActualizado);
+            //console.log('dispositivo actualizado la disponibilidad',dispositivoActualizado);
 
         });
 

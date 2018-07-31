@@ -2,9 +2,9 @@ const fs = require('fs');
 
 class Despacho {
 
-    constructor(numero, escritorio) {
+    constructor(numero, ruta) {
         this.numero = numero;
-        this.escritorio = escritorio;
+        this.ruta = ruta;
     }
 
 }
@@ -19,7 +19,7 @@ class ControlDespacho {
 
         let data = require('../data/control-flota.data.json');
 
-        console.log(data);
+        //console.log(data);
 
         if (data.hoy === this.hoy) {
             //continuamos con el trabajo
@@ -37,7 +37,6 @@ class ControlDespacho {
         this.despachos = [];
         this.ultimosNdespachos = [];
         this.grabarArchivo();
-        //console.log('reinciando tareas');
     }
 
 
@@ -54,7 +53,7 @@ class ControlDespacho {
         return `Despacho ${ this.ultimo }`;
     }
 
-    atenderDespacho(escritorio) {
+    atenderDespacho(ruta) {
 
         if (this.despachos.length === 0) {
             return {

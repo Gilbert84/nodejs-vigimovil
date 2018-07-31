@@ -196,7 +196,7 @@ function validarRole() {
             }
 
             if (role){
-                console.log('role:',role);
+                //console.log('role:',role);
             }else {
                 Role.count({}, (err, conteo) => {
 
@@ -220,7 +220,7 @@ function validarRole() {
                                     errors: err
                                 });
                             }
-                            console.log('role guardado:',roleGuardado);
+                            //console.log('role guardado:',roleGuardado);
                         });
                         roleAdministrador.save((err,roleGuardado)=>{
                             if (err) {
@@ -230,7 +230,7 @@ function validarRole() {
                                     errors: err
                                 });
                             }
-                            console.log('role guardado:',roleGuardado);
+                            //console.log('role guardado:',roleGuardado);
                         });
                         roleUsuario.save((err,roleGuardado)=>{
                             if (err) {
@@ -240,7 +240,7 @@ function validarRole() {
                                     errors: err
                                 });
                             }
-                            console.log('role guardado:',roleGuardado);
+                            //console.log('role guardado:',roleGuardado);
                         });
                     }
                 });

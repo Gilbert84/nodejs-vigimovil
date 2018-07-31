@@ -32,15 +32,18 @@ app.use(require('./routes/index.routes'));
 
 
 // Conexión a la base de datos
-mongoose.connection.openUri(process.env.urlDataBase, (err, res) => {
-    if (err) throw err;
+mongoose.connection.openUri(process.env.urlDataBase, (err) => {
+    if (err) {
+        console.log('error', err);
+        throw err;
+    };
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'online');
 });
 
 
 // app.use(express.static(__dirname + '/'))
 // app.use('/uploads', serveIndex(__dirname + '/uploads'));
-// app.use(express.static(publicPath));
+//app.use(express.static(publicPath));
 
 var server = http.createServer(app);
 
@@ -50,7 +53,10 @@ require('./sockets/routes.socket');
 
 
 // Escuchar peticiones
-server.listen(process.env.PORT, (err) => {
-    if (err) throw new Error(err);
+server.listen(process.env.PORT, function(err) {
+    if (err) {
+        console.log('error iniciando escucha', err);
+        throw new Error(err);
+    }
     console.log(`Servidor en puerto. ${ process.env.PORT }: \x1b[32m%s\x1b[0m`, 'online');
 });

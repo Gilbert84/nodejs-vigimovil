@@ -176,7 +176,8 @@ app.post('/', mdAutenticacion.verificaToken, (req, res) => {
         pasajeros: body.pasajeros,
         estado: body.estado,
         horaSalidaAsignada: body.horaSalidaAsignada,
-        horaLlegadaAsignada: body.horaLlegadaAsignada
+        horaLlegadaAsignada: body.horaLlegadaAsignada,
+        fechaActualizado: null
     });
 
     viaje.save((err, viajeGuardado) => {
